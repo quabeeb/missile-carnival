@@ -1,0 +1,9 @@
+[package]
+name = "missile-carnival"
+version = "0.1.0"
+authors = ["Andrew Lee <quabeeb@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+ggez = "0.5"
+rand = "0.7.3"
