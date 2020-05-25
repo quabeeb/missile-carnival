@@ -128,9 +128,9 @@ impl EventHandler for State {
                 graphics::DrawMode::fill(),
                 graphics::Rect::new_i32(
                     m.current_position.x,
-                    -600 + m.current_position.y,
+                    m.current_position.y,
                     10,
-                    600
+                    10
                 ),
                 missile_color
             )?;
