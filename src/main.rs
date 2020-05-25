@@ -1,17 +1,18 @@
 extern crate rand;
 
-use ggez::{graphics, Context, ContextBuilder, GameResult};
-use ggez::event::{self, EventHandler};
+use ggez::{input, graphics, Context, ContextBuilder, GameResult};
+use ggez::event::{self, EventHandler, KeyCode};
 use ggez::timer;
 use rand::Rng;
-
 
 mod missile;
 mod position;
 
+const DESIRED_FPS: u32 = 60;
+
 fn main() {    
     let (mut ctx, mut event_loop) = ContextBuilder::new("cuban-missie-crisis-test", "Andy")
-        .window_setup(ggez::conf::WindowSetup::default().title("O shit you started WW3"))
+        .window_setup(ggez::conf::WindowSetup::default().title("missile-crisis"))
 		.build()
 		.expect("Could not create ggez context!");
 
@@ -25,17 +26,18 @@ fn main() {
 }
 
 struct State {
-    timesteps: i32,
-    missiles: Vec<missile::Missile>
+    missiles: Vec<missile::Missile>,
+    missile_spawning_position: position::Position
 }
 
 impl State {
     pub fn new(_ctx: &mut Context) -> State {
         let list: Vec<missile::Missile> = Vec::new();
+        let initial_position = position::Position::new(400, 600);
 
         let state = State {
-            timesteps: 300,
-            missiles: list
+            missiles: list,
+            missile_spawning_position: initial_position,
         };
 
         state
@@ -44,20 +46,43 @@ impl State {
 
 impl EventHandler for State {
     fn update(&mut self, ctx: &mut Context) -> GameResult<()> {
-        const DESIRED_FPS: u32 = 60;
 
-        while timer::check_update_time(ctx, DESIRED_FPS) {
+        let pressed_keys = input::keyboard::pressed_keys(ctx);
+        let mut incrementer = 2;
 
-            let missile_spawning_position = position::Position::new(self.timesteps, 0);
-            let new_missile = missile::Missile::new(missile_spawning_position);
+        if pressed_keys.contains(&KeyCode::LShift) {
+            incrementer = 1;
+        }
 
-            self.missiles.push(new_missile);
+        if pressed_keys.contains(&KeyCode::Up) {
+            self.missile_spawning_position.y -= incrementer;     
+        }
 
+        if pressed_keys.contains(&KeyCode::Down) {
+            self.missile_spawning_position.y += incrementer;
+        }
+
+        if pressed_keys.contains(&KeyCode::Left) {
+            self.missile_spawning_position.x -= incrementer;
+        }
+
+        if pressed_keys.contains(&KeyCode::Right) {
+            self.missile_spawning_position.x += incrementer;
+        }
+
+        if pressed_keys.contains(&KeyCode::Z) {
+            let new_right_missile = missile::Missile::new(self.missile_spawning_position, 1);
+            let new_left_missile = missile::Missile::new(self.missile_spawning_position, -1);
+            self.missiles.push(new_right_missile);
+            self.missiles.push(new_left_missile);
+        }
+
+        while timer::check_update_time(ctx, DESIRED_FPS) {            
             for m in self.missiles.iter_mut() {
                 m.get_new_position();
             }
 
-            self.timesteps -= 1;
+            self.missiles.retain(|x| x.current_position.y > 0);
         }
 
         Ok(())
@@ -68,7 +93,23 @@ impl EventHandler for State {
         graphics::clear(ctx, graphics::WHITE);
 
         let mut rng = rand::thread_rng();
-        let color = [rng.gen(), rng.gen(), rng.gen(), 1.0].into();
+        let player_color = [0.0, 0.0, 1.0, 1.0].into();
+        let missile_color = [1.0, 0.0, 0.0, 1.0].into();
+
+        let missile_spawner = graphics::Mesh::new_rectangle(
+            ctx,
+            graphics::DrawMode::fill(),
+            graphics::Rect::new_i32(
+                self.missile_spawning_position.x,
+                self.missile_spawning_position.y,
+                10,
+                10
+            ),
+            player_color
+        )?;
+
+        graphics::draw(ctx, &missile_spawner, (ggez::mint::Point2 { x: 0.0, y: 0.0 },))?;
+
 
         for m in &self.missiles {
             let rectangle = graphics::Mesh::new_rectangle(
@@ -80,7 +121,7 @@ impl EventHandler for State {
                     10,
                     10
                 ),
-                color
+                missile_color
             )?;
 
             graphics::draw(ctx, &rectangle, (ggez::mint::Point2 { x: 0.0, y: 0.0 },))?;
