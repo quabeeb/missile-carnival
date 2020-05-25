@@ -7,7 +7,7 @@ use ggez::timer;
 mod missile;
 mod position;
 
-const DESIRED_FPS: u32 = 240;
+const DESIRED_FPS: u32 = 60;
 
 
 fn main() {    

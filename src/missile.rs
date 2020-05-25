@@ -15,7 +15,7 @@ impl Missile {
     }
 
     pub fn get_new_position(&mut self) -> position::Position {
-        self.current_position.y -= 10;
+        self.current_position.y -= 15;
         self.current_position
     }
 }
