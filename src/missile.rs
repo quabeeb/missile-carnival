@@ -1,7 +1,5 @@
 use crate::position;
 
-use ggez::{Context, GameResult};
-
 #[derive(PartialEq, Eq, Hash)]
 pub struct Missile {
     pub current_position: position::Position

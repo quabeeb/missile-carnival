@@ -8,10 +8,10 @@ use ggez::nalgebra;
 
 mod missile;
 mod position;
+mod player;
 
 const DESIRED_FPS: u32 = 60;
 
-const PLAYER_WIDTH: i32 = 10;
 const MISSILE_GAPS: [i32; 3] = [10, 20, 30];
 const MISSILE_WIDTH: i32 = 8;
 
@@ -34,8 +34,8 @@ fn main() {
 }
 
 struct State {
+    player: player::Player,
     missiles: Vec<missile::Missile>,
-    missile_spawning_position: position::Position,
     spritebatch: graphics::spritebatch::SpriteBatch,
 }
 
@@ -48,8 +48,8 @@ impl State {
         let batch = graphics::spritebatch::SpriteBatch::new(image);
 
         let state = State {
+            player: player::Player::new(initial_position),
             missiles: list,
-            missile_spawning_position: initial_position,
             spritebatch: batch,
         };
 
@@ -68,26 +68,29 @@ impl EventHandler for State {
         }
 
         if pressed_keys.contains(&KeyCode::Up) {
-            self.missile_spawning_position.y -= incrementer;     
+            self.player.shift(0, incrementer * -1);
         }
 
         if pressed_keys.contains(&KeyCode::Down) {
-            self.missile_spawning_position.y += incrementer;
+            self.player.shift(0, incrementer * 1);
         }
 
         if pressed_keys.contains(&KeyCode::Left) {
-            self.missile_spawning_position.x -= incrementer;
+            self.player.shift(incrementer * -1, 0);
         }
 
         if pressed_keys.contains(&KeyCode::Right) {
-            self.missile_spawning_position.x += incrementer;
+            self.player.shift(incrementer * 1, 0);
         }
 
         if pressed_keys.contains(&KeyCode::Z) {
-            let right_position = position::Position::new(self.missile_spawning_position.x + PLAYER_WIDTH + MISSILE_GAPS[0], self.missile_spawning_position.y);
-            let left_position = position::Position::new(self.missile_spawning_position.x - MISSILE_GAPS[0] - MISSILE_WIDTH, self.missile_spawning_position.y);
-            let right_right_position = position::Position::new(self.missile_spawning_position.x + PLAYER_WIDTH + MISSILE_GAPS[1], self.missile_spawning_position.y);
-            let left_left_position = position::Position::new(self.missile_spawning_position.x - MISSILE_GAPS[1] - MISSILE_WIDTH, self.missile_spawning_position.y);
+            let x = self.player.position.x;
+            let y = self.player.position.y;
+
+            let right_position = position::Position::new(x + player::PLAYER_WIDTH + MISSILE_GAPS[0], y);
+            let left_position = position::Position::new(x - MISSILE_GAPS[0] - MISSILE_WIDTH, y);
+            let right_right_position = position::Position::new(x + player::PLAYER_WIDTH + MISSILE_GAPS[1], y);
+            let left_left_position = position::Position::new(x - MISSILE_GAPS[1] - MISSILE_WIDTH, y);
 
             let new_right_right_missile = missile::Missile::new(right_right_position);
             let new_left_left_missile = missile::Missile::new(left_left_position);
@@ -114,28 +117,14 @@ impl EventHandler for State {
     fn draw(&mut self, ctx: &mut Context) -> GameResult<()> {  
         graphics::clear(ctx, graphics::WHITE);
 
-        let player_color = [0.0, 0.0, 1.0, 1.0].into();
-
-        let missile_spawner = graphics::Mesh::new_rectangle(
-            ctx,
-            graphics::DrawMode::fill(),
-            graphics::Rect::new_i32(
-                self.missile_spawning_position.x,
-                self.missile_spawning_position.y,
-                10,
-                10
-            ),
-            player_color
-        )?;
-
-        graphics::draw(ctx, &missile_spawner, (ggez::mint::Point2 { x: 0.0, y: 0.0 },))?;
-
         for m in &self.missiles {
             let p = graphics::DrawParam::new()
                 .dest(nalgebra::Point2::new(m.current_position.x as f32, m.current_position.y as f32));
 
             self.spritebatch.add(p);
         }
+
+        self.player.draw(ctx)?;
 
         let param = graphics::DrawParam::new();
 
