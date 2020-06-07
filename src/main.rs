@@ -2,11 +2,10 @@ extern crate rand;
 
 use std::path;
 use ggez::{input, graphics, Context, ContextBuilder, GameResult};
-use ggez::event::{self, EventHandler, KeyCode};
+use ggez::event::{self, EventHandler};
 use ggez::timer;
 use ggez::nalgebra::Vector2;
 use ggez::filesystem;
-use ggez::nalgebra;
 
 mod straight_missile;
 mod player;
@@ -39,7 +38,6 @@ struct State {
 impl State {
     pub fn new(_ctx: &mut Context) -> State {
         let image_vec = State::load_missile_sprites(_ctx);
-        let list: Vec<straight_missile::Missile> = Vec::new();
         let initial_position = Fec2::new(400.0, 600.0);
         
         let state = State {
@@ -68,13 +66,12 @@ impl State {
 
 impl EventHandler for State {
     fn update(&mut self, ctx: &mut Context) -> GameResult<()> {
-        let pressed_keys = input::keyboard::pressed_keys(ctx);
-        self.player.handle_input(pressed_keys);
-
-        while timer::check_update_time(ctx, DESIRED_FPS) {            
+        while timer::check_update_time(ctx, DESIRED_FPS) {        
+            let pressed_keys = input::keyboard::pressed_keys(ctx);
+            self.player.handle_input(pressed_keys);    
             self.player.update_missiles();
-            // println!("{:0}", self.missiles.len());
-            // println!("{:0}", ggez::timer::fps(ctx));
+
+            println!("{:0}", ggez::timer::fps(ctx));
         }
 
         Ok(())
