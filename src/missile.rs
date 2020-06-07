@@ -1,24 +1,35 @@
-use crate::position;
+use ggez::nalgebra::Vector2;
 
-#[derive(PartialEq, Eq, Hash)]
+type Fec2 = Vector2<f32>;
+const MAX_MISSILE_VELOCITY: f32 = -30.0;
+
 pub struct Missile {
-    x_increment: i8,
-    initial_position: position::Position,
-    pub current_position: position::Position
+    pub rotation_vec: Fec2,
+    pub position: Fec2,
+    velocity: f32,
+    acceleration: f32,
+}
+
+fn vec_from_rotation(rotation: f32) -> Vector2<f32> {
+    let vx = rotation.sin();
+    let vy = rotation.cos();
+    Vector2::new(vx, vy)
 }
 
 impl Missile {
-    pub fn new(direction: i8, pos: position::Position) -> Self {
+    pub fn new(position: Fec2, velocity: f32, acceleration: f32, rotation: f32) -> Self {
+        let rotation_vec = vec_from_rotation(rotation);
+
         Missile {
-            x_increment: direction,
-            initial_position: pos,
-            current_position: pos,
+            rotation_vec: rotation_vec,
+            position: position,
+            velocity: velocity,
+            acceleration: acceleration,
         }
     }
 
-    pub fn get_new_position(&mut self) -> position::Position {
-        self.current_position.x += self.x_increment as i32;
-        self.current_position.y = (self.current_position.y) - ((self.current_position.x - self.initial_position.x).pow(3)/(self.current_position.x - self.initial_position.x).pow(2)).abs();
-        self.current_position
+    pub fn set_new_position(&mut self) {
+        self.position += self.rotation_vec * self.velocity;
+        self.velocity = MAX_MISSILE_VELOCITY.max(self.velocity + self.acceleration);
     }
 }
