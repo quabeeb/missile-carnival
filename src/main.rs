@@ -8,7 +8,7 @@ use ggez::nalgebra::Vector2;
 use ggez::filesystem;
 use ggez::nalgebra;
 
-mod missile;
+mod straight_missile;
 mod player;
 
 type Fec2 = Vector2<f32>;
@@ -37,7 +37,7 @@ fn main() {
 
 struct State {
     player: player::Player,
-    missiles: Vec<missile::Missile>,
+    missiles: Vec<straight_missile::Missile>,
     spritebatches: Vec<graphics::spritebatch::SpriteBatch>,
     iteration: i32
 }
@@ -45,7 +45,7 @@ struct State {
 impl State {
     pub fn new(_ctx: &mut Context) -> State {
         let image_vec = State::load_missile_sprites(_ctx);
-        let list: Vec<missile::Missile> = Vec::new();
+        let list: Vec<straight_missile::Missile> = Vec::new();
         let initial_position = Fec2::new(400.0, 600.0);
         
         let state = State {
@@ -64,8 +64,6 @@ impl State {
         let mut rainbow_missiles_dir: Vec<path::PathBuf> = filesystem::read_dir(ctx, "/rainbow-missiles").unwrap().collect();
 
         rainbow_missiles_dir.sort();
-
-        println!("{:?}", rainbow_missiles_dir);
     
         for missile_sprite in rainbow_missiles_dir {
             let image = graphics::Image::new(ctx, missile_sprite).unwrap();
@@ -90,8 +88,8 @@ impl EventHandler for State {
             let right_position = Fec2::new(x + player::PLAYER_WIDTH + MISSILE_GAPS[0], y);
             let left_position = Fec2::new(x - MISSILE_GAPS[0] - MISSILE_WIDTH, y);
 
-            let new_right_missile = missile::Missile::new(right_position, -1.0, -1.0, 0.0);
-            let new_left_missile = missile::Missile::new(left_position, -1.0, -1.0, 0.0);
+            let new_right_missile = straight_missile::Missile::new(right_position, -1.0, -0.5, 0.0);
+            let new_left_missile = straight_missile::Missile::new(left_position, -1.0, -0.5, 0.0);
 
             self.missiles.push(new_right_missile);
             self.missiles.push(new_left_missile);
@@ -105,8 +103,8 @@ impl EventHandler for State {
             self.missiles.retain(|x| x.position[1] > -20.0);
             self.iteration += 1;
 
-            println!("{:0}", self.missiles.len());
-            println!("{:0}", ggez::timer::fps(ctx));
+            // println!("{:0}", self.missiles.len());
+            // println!("{:0}", ggez::timer::fps(ctx));
         }
 
         Ok(())
