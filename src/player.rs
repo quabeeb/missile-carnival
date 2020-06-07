@@ -19,6 +19,7 @@ pub struct Player {
     pub position: Fec2,
     spritebatches: Vec<graphics::spritebatch::SpriteBatch>,
     missile_list: Vec<straight_missile::Missile>,
+    iteration: i32,
 }
 
 impl Player {
@@ -46,17 +47,21 @@ impl Player {
         }
 
         if pressed_keys.contains(&KeyCode::Z) {
+            let iteration_mod = (self.iteration % 11) as usize;
+
             let x = self.position[0];
             let y = self.position[1];
 
             let right_position = Fec2::new(x + PLAYER_WIDTH + MISSILE_GAPS[0], y);
             let left_position = Fec2::new(x - MISSILE_GAPS[0] - MISSILE_WIDTH, y);
 
-            let new_right_missile = straight_missile::Missile::new(right_position, 0.0, -0.5, 0.0);
-            let new_left_missile = straight_missile::Missile::new(left_position, 0.0, -0.5, 0.0);
+            let new_right_missile = straight_missile::Missile::new(right_position, 0.0, -0.5, 0.0, iteration_mod);
+            let new_left_missile = straight_missile::Missile::new(left_position, 0.0, -0.5, 0.0, iteration_mod);
 
             self.missile_list.push(new_right_missile);
             self.missile_list.push(new_left_missile);
+
+            self.iteration += 1;
         }
     }
 
@@ -66,7 +71,8 @@ impl Player {
         Player {
             position: starting_position,
             spritebatches: spritebatches,
-            missile_list: missile_list
+            missile_list: missile_list,
+            iteration: 0,
         }
     }
 
@@ -79,7 +85,6 @@ impl Player {
     }
 
     pub fn draw(&mut self, ctx: &mut Context) -> GameResult<()> {
-        // let iteration_mod = (self.iteration % 11) as usize;
         self.draw_player(ctx)?;
         self.draw_missiles(ctx)?;
         Ok(())
@@ -105,17 +110,23 @@ impl Player {
     }
 
     fn draw_missiles(&mut self, ctx: &mut Context) -> GameResult<()> {
+        let param = graphics::DrawParam::new();
+
         for m in &self.missile_list {
             let p = graphics::DrawParam::new()
                 .dest(nalgebra::Point2::new(m.position[0], m.position[1]));
-
-            self.spritebatches[0].add(p);
+            
+            self.spritebatches[m.spritebatch_index].add(p);
         }
 
-        let param = graphics::DrawParam::new();
+        for spritebatch in &self.spritebatches {
+            graphics::draw(ctx, spritebatch, param)?;
+        }
 
-        graphics::draw(ctx, &self.spritebatches[0], param)?;
-        self.spritebatches[0].clear();
+        for index in 0..self.spritebatches.len() {
+            self.spritebatches[index].clear();
+        }
+        
         Ok(())
     }
 }

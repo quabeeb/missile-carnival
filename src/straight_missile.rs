@@ -8,6 +8,7 @@ pub struct Missile {
     pub position: Fec2,
     velocity: f32,
     acceleration: f32,
+    pub spritebatch_index: usize,
 }
 
 fn vec_from_rotation(rotation: f32) -> Vector2<f32> {
@@ -17,7 +18,7 @@ fn vec_from_rotation(rotation: f32) -> Vector2<f32> {
 }
 
 impl Missile {
-    pub fn new(position: Fec2, velocity: f32, acceleration: f32, rotation: f32) -> Self {
+    pub fn new(position: Fec2, velocity: f32, acceleration: f32, rotation: f32, spritebatch_index: usize) -> Self {
         let rotation_vec = vec_from_rotation(rotation);
 
         Missile {
@@ -25,6 +26,7 @@ impl Missile {
             position: position,
             velocity: velocity,
             acceleration: acceleration,
+            spritebatch_index: spritebatch_index,
         }
     }
 
