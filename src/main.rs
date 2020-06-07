@@ -15,9 +15,6 @@ type Fec2 = Vector2<f32>;
 
 const DESIRED_FPS: u32 = 60;
 
-const MISSILE_GAPS: [f32; 3] = [10.0, 10.0, 10.0];
-const MISSILE_WIDTH: f32 = 10.0;
-
 fn main() {
     let resource_dir = path::PathBuf::from("./resources");
 
@@ -36,10 +33,7 @@ fn main() {
 }
 
 struct State {
-    player: player::Player,
-    missiles: Vec<straight_missile::Missile>,
-    spritebatches: Vec<graphics::spritebatch::SpriteBatch>,
-    iteration: i32
+    player: player::Player
 }
 
 impl State {
@@ -49,10 +43,7 @@ impl State {
         let initial_position = Fec2::new(400.0, 600.0);
         
         let state = State {
-            player: player::Player::new(initial_position),
-            missiles: list,
-            spritebatches: image_vec,
-            iteration: 0,
+            player: player::Player::new(initial_position, image_vec)
         };
 
         state
@@ -78,31 +69,10 @@ impl State {
 impl EventHandler for State {
     fn update(&mut self, ctx: &mut Context) -> GameResult<()> {
         let pressed_keys = input::keyboard::pressed_keys(ctx);
-
         self.player.handle_input(pressed_keys);
-        
-        if pressed_keys.contains(&KeyCode::Z) {
-            let x = self.player.position[0];
-            let y = self.player.position[1];
 
-            let right_position = Fec2::new(x + player::PLAYER_WIDTH + MISSILE_GAPS[0], y);
-            let left_position = Fec2::new(x - MISSILE_GAPS[0] - MISSILE_WIDTH, y);
-
-            let new_right_missile = straight_missile::Missile::new(right_position, -1.0, -0.5, 0.0);
-            let new_left_missile = straight_missile::Missile::new(left_position, -1.0, -0.5, 0.0);
-
-            self.missiles.push(new_right_missile);
-            self.missiles.push(new_left_missile);
-        }
-
-        while timer::check_update_time(ctx, DESIRED_FPS) {
-            for m in self.missiles.iter_mut() {
-                m.set_new_position();
-            }
-
-            self.missiles.retain(|x| x.position[1] > -20.0);
-            self.iteration += 1;
-
+        while timer::check_update_time(ctx, DESIRED_FPS) {            
+            self.player.update_missiles();
             // println!("{:0}", self.missiles.len());
             // println!("{:0}", ggez::timer::fps(ctx));
         }
@@ -111,23 +81,9 @@ impl EventHandler for State {
     }
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult<()> {
-        let iteration_mod = (self.iteration % 11) as usize;
-
         graphics::clear(ctx, graphics::WHITE);
 
-        for m in &self.missiles {
-            let p = graphics::DrawParam::new()
-                .dest(nalgebra::Point2::new(m.position[0], m.position[1]));
-
-            self.spritebatches[iteration_mod].add(p);
-        }
-
         self.player.draw(ctx)?;
-
-        let param = graphics::DrawParam::new();
-
-        graphics::draw(ctx, &self.spritebatches[iteration_mod], param)?;
-        self.spritebatches[iteration_mod].clear();
 
         graphics::present(ctx)?;
         

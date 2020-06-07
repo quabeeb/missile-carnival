@@ -1,7 +1,7 @@
 use ggez::nalgebra::Vector2;
 
 type Fec2 = Vector2<f32>;
-const MAX_MISSILE_VELOCITY: f32 = -30.0;
+const MAX_MISSILE_VELOCITY: f32 = -20.0;
 
 pub struct Missile {
     pub rotation_vec: Fec2,
