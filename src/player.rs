@@ -1,9 +1,9 @@
-use crate::straight_missile;
-
 use ggez::event::KeyCode;
 use ggez::{graphics, Context, GameResult};
-use ggez::nalgebra;
 use ggez::nalgebra::Vector2;
+use ggez::nalgebra;
+
+use crate::missile_generator;
 
 use std::collections::HashSet;
 
@@ -18,13 +18,12 @@ const MISSILE_WIDTH: f32 = 10.0;
 pub struct Player {
     pub position: Fec2,
     spritebatches: Vec<graphics::spritebatch::SpriteBatch>,
-    missile_list: Vec<straight_missile::Missile>,
-    iteration: i32,
+    missile_generator_list: Vec<missile_generator::MissileGenerator>
 }
 
 impl Player {
     pub fn handle_input(&mut self, pressed_keys: &HashSet<KeyCode>) {
-        let mut incrementer = 2.0;
+        let mut incrementer = 3.0;
 
         if pressed_keys.contains(&KeyCode::LShift) {
             incrementer = 1.0;
@@ -47,46 +46,58 @@ impl Player {
         }
 
         if pressed_keys.contains(&KeyCode::Z) {
-            let iteration_mod = (self.iteration % 11) as usize;
-
-            let x = self.position[0];
-            let y = self.position[1];
-
-            let right_position = Fec2::new(x + PLAYER_WIDTH + MISSILE_GAPS[0], y);
-            let left_position = Fec2::new(x - MISSILE_GAPS[0] - MISSILE_WIDTH, y);
-
-            let new_right_missile = straight_missile::Missile::new(right_position, 0.0, -0.5, 0.0, iteration_mod);
-            let new_left_missile = straight_missile::Missile::new(left_position, 0.0, -0.5, 0.0, iteration_mod);
-
-            self.missile_list.push(new_right_missile);
-            self.missile_list.push(new_left_missile);
-
-            self.iteration += 1;
+            for m in self.missile_generator_list.iter_mut() {
+                m.add_missile();
+            }
         }
+
+        self.update();
     }
 
     pub fn new(starting_position: Fec2, spritebatches: Vec<graphics::spritebatch::SpriteBatch>) -> Player {
-        let missile_list: Vec<straight_missile::Missile> = Vec::new();
+        let mut missile_generator_list: Vec<missile_generator::MissileGenerator> = Vec::new();
 
+        let x = starting_position[0];
+        let y = starting_position[1];
+
+        let right_missile_generator = missile_generator::MissileGenerator::new(Fec2::new(x + PLAYER_WIDTH + MISSILE_GAPS[0] - 1.0, y));
+        let left_missile_generator = missile_generator::MissileGenerator::new(Fec2::new(x - MISSILE_GAPS[0] - MISSILE_WIDTH, y));
+
+        missile_generator_list.push(right_missile_generator);
+        missile_generator_list.push(left_missile_generator);
+        
+        // let right_position = Fec2::new(x + PLAYER_WIDTH + MISSILE_GAPS[0] - 1.0, y); // -1.0 of origin
+        // let left_position = Fec2::new(x - MISSILE_GAPS[0] - MISSILE_WIDTH, y);
+        
+        // let right_right_position = Fec2::new(x + PLAYER_WIDTH + MISSILE_GAPS[0] + MISSILE_GAPS[1] - 1.0, y); // -1.0 of origin
+        // let left_left_position = Fec2::new(x - MISSILE_GAPS[0] - MISSILE_GAPS[1] - MISSILE_WIDTH, y);
         Player {
             position: starting_position,
             spritebatches: spritebatches,
-            missile_list: missile_list,
-            iteration: 0,
+            missile_generator_list: missile_generator_list,
         }
     }
 
-    pub fn update_missiles(&mut self) { 
-        for m in self.missile_list.iter_mut() {
-            m.set_new_position();
-        }
+    pub fn update(&mut self) { 
+        let x = self.position[0];
+        let y = self.position[1];
 
-        self.missile_list.retain(|x| x.position[1] > -20.0);
+        self.missile_generator_list[0].update(Fec2::new(x + PLAYER_WIDTH + MISSILE_GAPS[0] - 1.0, y));
+        self.missile_generator_list[1].update(Fec2::new(x - MISSILE_GAPS[0] - MISSILE_WIDTH, y));
+
+        // for m in self.missile_generator_list.iter_mut() {
+        //     m.update(Fec2::new(x + PLAYER_WIDTH + MISSILE_GAPS[0] - 1.0, y));
+        // }
     }
 
     pub fn draw(&mut self, ctx: &mut Context) -> GameResult<()> {
         self.draw_player(ctx)?;
         self.draw_missiles(ctx)?;
+
+        for m in self.missile_generator_list.iter_mut() {
+            m.draw(ctx)?;
+        }
+        
         Ok(())
     }
 
@@ -112,11 +123,15 @@ impl Player {
     fn draw_missiles(&mut self, ctx: &mut Context) -> GameResult<()> {
         let param = graphics::DrawParam::new();
 
-        for m in &self.missile_list {
-            let p = graphics::DrawParam::new()
-                .dest(nalgebra::Point2::new(m.position[0], m.position[1]));
-            
-            self.spritebatches[m.spritebatch_index].add(p);
+        for missile_generator in &self.missile_generator_list {
+            for missile in &missile_generator.missile_list {
+                let p = graphics::DrawParam::new()
+                    .dest(nalgebra::Point2::new(missile.position[0] + 5.0, missile.position[1] + 5.0))
+                    .rotation(0.785398)
+                    .offset(nalgebra::Point2::new(0.5, 0.5));
+                
+                self.spritebatches[missile.spritebatch_index].add(p);
+            }
         }
 
         for spritebatch in &self.spritebatches {
