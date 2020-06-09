@@ -14,7 +14,6 @@ const PLAYER_HEIGHT: f32 = 9.0;
 const PLAYER_WIDTH: f32 = 9.0;
 
 const MISSILE_GAPS: [f32; 3] = [20.0, 10.0, 10.0];
-const MISSILE_WIDTH: f32 = 10.0;
 
 pub struct Player {
     pub position: Fec2,
@@ -61,9 +60,9 @@ impl Player {
         let radius = PLAYER_WIDTH + MISSILE_GAPS[0] - 1.0;
 
         let right_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, 0.0);
-        let bottom_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, (1.0/2.0 * PI) as f32);
+        let bottom_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, (PI/2.0) as f32);
         let left_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, PI as f32);
-        let top_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, (3.0/2.0 * PI) as f32 );        
+        let top_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, (PI*3.0/2.0) as f32 );        
 
         missile_generator_list.push(right_missile_generator);
         missile_generator_list.push(left_missile_generator);
@@ -120,7 +119,7 @@ impl Player {
             for missile in &missile_generator.missile_list {
                 let p = graphics::DrawParam::new()
                     .dest(nalgebra::Point2::new(missile.position[0] + 5.0, missile.position[1] + 5.0))
-                    .rotation(0.785398)
+                    .rotation((PI/4.0) as f32)
                     .offset(nalgebra::Point2::new(0.5, 0.5));
                 
                 self.spritebatches[missile.spritebatch_index].add(p);
