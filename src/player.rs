@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use ggez::event::KeyCode;
 use ggez::{graphics, Context, GameResult};
 use ggez::nalgebra::Vector2;
@@ -6,14 +7,10 @@ use std::f64::consts::PI;
 
 use crate::missile_generator;
 
-use std::collections::HashSet;
-
 type Fec2 = Vector2<f32>;
 
 const PLAYER_HEIGHT: f32 = 9.0;
 const PLAYER_WIDTH: f32 = 9.0;
-
-const MISSILE_GAPS: [f32; 3] = [20.0, 10.0, 10.0];
 
 pub struct Player {
     pub position: Fec2,
@@ -51,13 +48,15 @@ impl Player {
             }
         }
 
-        self.update();
+        for m in self.missile_generator_list.iter_mut() {
+            m.handle_input(pressed_keys);
+        }        
     }
 
     pub fn new(starting_position: Fec2, spritebatches: Vec<graphics::spritebatch::SpriteBatch>) -> Player {
         let mut missile_generator_list: Vec<missile_generator::MissileGenerator> = Vec::new();
 
-        let radius = PLAYER_WIDTH + MISSILE_GAPS[0] - 1.0;
+        let radius = 30.0;
 
         let right_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, 0.0);
         let bottom_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, (PI/2.0) as f32);

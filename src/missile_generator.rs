@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+use ggez::event::KeyCode;
 use ggez::nalgebra::Vector2;
 use ggez::{graphics, Context, GameResult};
 
@@ -7,6 +9,9 @@ type Fec2 = Vector2<f32>;
 
 const MISSILE_GENERATOR_HEIGHT: i32 = 10;
 const MISSILE_GENERATOR_WEIGHT: i32 = 10;
+
+const MINIMUM_GENERATOR_RADIUS: f32 = 15.0;
+const MAXIMUM_GENERATOR_RADIUS: f32 = 30.0;
 
 pub struct MissileGenerator {
     position: Fec2,
@@ -62,10 +67,18 @@ impl MissileGenerator {
         let new_y = player_position[1] + self.radius * self.rotation_in_radians.sin();
         self.position = Fec2::new(new_x, new_y);
 
-        self.rotation_in_radians += 0.02;
+        self.rotation_in_radians += 0.04;
 
         if self.rotation_in_radians > 6.28 {
             self.rotation_in_radians = 0.0;
+        }
+    }
+
+    pub fn handle_input(&mut self, pressed_keys: &HashSet<KeyCode>) {
+        if pressed_keys.contains(&KeyCode::LShift) {
+            self.radius = (self.radius - 1.0).max(MINIMUM_GENERATOR_RADIUS);
+        } else {
+            self.radius = (self.radius + 1.0).min(MAXIMUM_GENERATOR_RADIUS);
         }
     }
 
