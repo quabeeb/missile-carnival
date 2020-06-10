@@ -1,4 +1,9 @@
 # missile-carnival
-lets shoot some missiles
+Not really a carnival.
 
 <img src="docs/shooting-moving.gif">
+
+## Building/Running
+
+1. Install Rust/Cargo - https://doc.rust-lang.org/cargo/getting-started/installation.html
+2. Run using `$ cargo run --release`
