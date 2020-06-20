@@ -1,7 +1,9 @@
+use crate::homing_missile;
 use std::collections::HashSet;
 use ggez::event::KeyCode;
 use nalgebra::Vector2;
 use ggez::{graphics, Context, GameResult};
+use std::f64::consts::PI;
 
 use crate::straight_missile;
 
@@ -15,7 +17,7 @@ const MAXIMUM_GENERATOR_RADIUS: f32 = 30.0;
 
 pub struct MissileGenerator {
     position: Fec2,
-    pub missile_list: Vec<straight_missile::Missile>,
+    pub missile_list: Vec<homing_missile::Missile>,
     missile_toggle: i32,
     iteration: i32,
     radius: f32,
@@ -24,7 +26,7 @@ pub struct MissileGenerator {
 
 impl MissileGenerator {
     pub fn new(position: Fec2, radius: f32, rotation: f32) -> Self {
-        let missile_list: Vec<straight_missile::Missile> = Vec::new();
+        let missile_list: Vec<homing_missile::Missile> = Vec::new();
 
         MissileGenerator {
             position: position,
@@ -38,11 +40,11 @@ impl MissileGenerator {
 
     pub fn add_missile(&mut self) {
         if self.missile_toggle % 2 == 0 {
-            let temp_rotation = 0.0;
+            let temp_rotation = (PI/2.0) as f32;
             // let temp_rotation = 4.71 - self.rotation_in_radians;
 
             let iteration_mod = (self.iteration/4 % 11) as usize;
-            let new_missile = straight_missile::Missile::new(self.position, 0.0, -5.0, temp_rotation, iteration_mod);
+            let new_missile = homing_missile::Missile::new(self.position, 0.0, -5.0, temp_rotation, iteration_mod);
 
             self.missile_list.push(new_missile);
 

@@ -1,9 +1,13 @@
-use nalgebra::Vector2;
+use nalgebra::{Vector2, Vector3};
+use nalgebra::base::Unit;
 
-type Fec2 = Vector2<f32>;
 const MAX_MISSILE_VELOCITY: f32 = -10.0;
 
+type Fec2 = Vector2<f32>;
+type Fec3 = Vector3<f32>;
+
 pub struct Missile {
+    pub rotation: f32,
     pub rotation_vec: Fec2,
     pub position: Fec2,
     velocity: f32,
@@ -11,10 +15,14 @@ pub struct Missile {
     pub spritebatch_index: usize,
 }
 
-fn vec_from_rotation(rotation: f32) -> Vector2<f32> {
-    let vx = rotation.sin();
-    let vy = rotation.cos();
-    Vector2::new(vx, vy)
+fn vec_from_rotation(rotation: f32) -> Fec2 {
+    let vx = rotation.cos();
+    let vy = rotation.sin();
+    Fec2::new(vx, vy)
+}
+
+fn fec3ify(vec2: Fec2) -> Fec3 {
+    Fec3::new(vec2[0], vec2[1], 0.0)
 }
 
 impl Missile {
@@ -22,6 +30,7 @@ impl Missile {
         let rotation_vec = vec_from_rotation(rotation);
 
         Missile {
+            rotation: rotation,
             rotation_vec: rotation_vec,
             position: position,
             velocity: velocity,
@@ -33,5 +42,12 @@ impl Missile {
     pub fn set_new_position(&mut self) {
         self.position += self.rotation_vec * self.velocity;
         self.velocity = MAX_MISSILE_VELOCITY.max(self.velocity + self.acceleration);
+
+        let desired_direction = Unit::new_normalize(fec3ify(Fec2::new(300.0, 400.0) - self.position));
+        let current_direction = Unit::new_normalize(fec3ify(self.rotation_vec));
+        let rotate_amount = desired_direction.cross(current_direction.as_ref())[2];
+
+        self.rotation += rotate_amount;
+        self.rotation_vec = vec_from_rotation(self.rotation);
     }
 }

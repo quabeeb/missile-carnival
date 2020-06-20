@@ -8,6 +8,7 @@ use nalgebra::Vector2;
 use ggez::filesystem;
 
 mod enemy_group;
+mod homing_missile;
 mod straight_missile;
 mod player;
 mod missile_generator;
@@ -91,7 +92,7 @@ impl EventHandler for State {
             self.player.handle_input(pressed_keys);    
             self.player.update();
 
-            // println!("{:0}", ggez::timer::fps(ctx));
+            println!("{:0}", ggez::timer::fps(ctx));
         }
 
         Ok(())
