@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 use ggez::event::KeyCode;
-use ggez::nalgebra::Vector2;
+use nalgebra::Vector2;
 use ggez::{graphics, Context, GameResult};
 
 use crate::straight_missile;

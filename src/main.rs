@@ -4,7 +4,7 @@ use std::path;
 use ggez::{input, graphics, Context, ContextBuilder, GameResult};
 use ggez::event::{self, EventHandler};
 use ggez::timer;
-use ggez::nalgebra::Vector2;
+use nalgebra::Vector2;
 use ggez::filesystem;
 
 mod enemy_group;

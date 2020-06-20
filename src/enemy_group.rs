@@ -1,8 +1,7 @@
 use crate::straight_missile;
 
-use ggez::{graphics, Context, GameResult};
-use ggez::nalgebra;
-use ggez::nalgebra::Vector2;
+use ggez::{graphics, Context, GameResult, nalgebra::Point2};
+use nalgebra::Vector2;
 
 type Fec2 = Vector2<f32>;
 
@@ -43,7 +42,7 @@ impl EnemyGroup {
         let param = graphics::DrawParam::new();
 
         let p = graphics::DrawParam::new()
-            .dest(nalgebra::Point2::new(self.position[0], self.position[1]));
+            .dest(Point2::new(self.position[0], self.position[1]));
             
         self.enemy_spritebatch.add(p);
 
@@ -59,7 +58,7 @@ impl EnemyGroup {
 
         for m in &self.missile_list {
             let p = graphics::DrawParam::new()
-                .dest(nalgebra::Point2::new(m.position[0], m.position[1]));
+                .dest(Point2::new(m.position[0], m.position[1]));
             
             self.enemy_spritebatch.add(p);
         }

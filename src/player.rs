@@ -1,8 +1,7 @@
 use std::collections::HashSet;
 use ggez::event::KeyCode;
-use ggez::{graphics, Context, GameResult};
-use ggez::nalgebra::Vector2;
-use ggez::nalgebra;
+use ggez::{graphics, Context, GameResult, nalgebra::Point2};
+use nalgebra::Vector2;
 use std::f64::consts::PI;
 
 use crate::missile_generator;
@@ -117,9 +116,9 @@ impl Player {
         for missile_generator in &self.missile_generator_list {
             for missile in &missile_generator.missile_list {
                 let p = graphics::DrawParam::new()
-                    .dest(nalgebra::Point2::new(missile.position[0] + 5.0, missile.position[1] + 5.0))
+                    .dest(Point2::new(missile.position[0] + 5.0, missile.position[1] + 5.0))
                     .rotation((PI/4.0) as f32)
-                    .offset(nalgebra::Point2::new(0.5, 0.5));
+                    .offset(Point2::new(0.5, 0.5));
                 
                 self.spritebatches[missile.spritebatch_index].add(p);
             }
