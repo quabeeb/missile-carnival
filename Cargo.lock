@@ -481,6 +481,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "either"
+version = "1.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bb1f6b1ce1c140482ea30ddd3335fc0024ac7ee112895426e0a629a6c20adfe3"
+
+[[package]]
 name = "error-chain"
 version = "0.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -512,6 +518,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "fixedbitset"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "37ab347416e802de484e4d03c7316c48f1ecb56574dfd4a46a80f173ce1de04d"
+
+[[package]]
 name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -539,10 +551,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a06f77d526c1a601b7c4cdd98f54b5eaabffc14d5f2f0296febdc7f357c6d3ba"
 
 [[package]]
+name = "generational-arena"
+version = "0.2.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8e1d3b771574f62d0548cee0ad9057857e9fc25d7a3335f140c84f6acd0bf601"
+dependencies = [
+ "cfg-if",
+]
+
+[[package]]
 name = "generic-array"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c68f0274ae0e023facc3c97b2e00f076be70e254bc851d972503b328db79b2ec"
+dependencies = [
+ "typenum",
+]
+
+[[package]]
+name = "generic-array"
+version = "0.13.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0ed1e761351b56f54eb9dcd0cfaca9fd0daecf93918e1cfc01c8a3d26ee7adcd"
 dependencies = [
  "typenum",
 ]
@@ -631,7 +661,7 @@ dependencies = [
  "log",
  "lyon",
  "mint",
- "nalgebra",
+ "nalgebra 0.18.1",
  "rodio",
  "serde",
  "serde_derive",
@@ -865,12 +895,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "indexmap"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c398b2b113b55809ceb9ee3e753fcbac793f1956663f3c36549c1346015c2afe"
+dependencies = [
+ "autocfg 1.0.0",
+]
+
+[[package]]
 name = "inflate"
 version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1cdb29978cc5797bd8dcc8e5bf7de604891df2a8dc576973d71a281e916db2ff"
 dependencies = [
  "adler32",
+]
+
+[[package]]
+name = "instant"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7777a24a1ce5de49fcdde84ec46efa487c3af49d5b6e6e0a50367cc5c1096182"
+dependencies = [
+ "stdweb 0.4.20",
+ "time",
 ]
 
 [[package]]
@@ -924,7 +973,7 @@ checksum = "8d542c1a317036c45c2aa1cf10cc9d403ca91eb2d333ef1a4917e5cb10628bd0"
 dependencies = [
  "byteorder",
  "ogg",
- "smallvec",
+ "smallvec 0.6.13",
 ]
 
 [[package]]
@@ -1145,6 +1194,9 @@ name = "missile-carnival"
 version = "0.1.0"
 dependencies = [
  "ggez",
+ "nalgebra 0.20.0",
+ "ncollide2d",
+ "nphysics2d",
  "rand 0.7.3",
 ]
 
@@ -1156,7 +1208,7 @@ checksum = "aaa9fddbc34c8c35dd2108515587b8ce0cab396f17977b8c738568e4edb521a2"
 dependencies = [
  "alga",
  "approx",
- "generic-array",
+ "generic-array 0.12.3",
  "matrixmultiply",
  "mint",
  "num-complex",
@@ -1164,6 +1216,43 @@ dependencies = [
  "num-traits 0.2.11",
  "rand 0.6.5",
  "typenum",
+]
+
+[[package]]
+name = "nalgebra"
+version = "0.20.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c6511777ed3da44b6a11e732a66a7d6274dfbbcd68ad968e64b778dcb829d94a"
+dependencies = [
+ "alga",
+ "approx",
+ "generic-array 0.13.2",
+ "matrixmultiply",
+ "num-complex",
+ "num-rational",
+ "num-traits 0.2.11",
+ "rand 0.7.3",
+ "rand_distr",
+ "typenum",
+]
+
+[[package]]
+name = "ncollide2d"
+version = "0.22.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "255c53356d15c18037b327c4a0d4d4ebb5f21ac77e9c4f7b79c4ba69500d826b"
+dependencies = [
+ "alga",
+ "approx",
+ "bitflags",
+ "downcast-rs",
+ "either",
+ "nalgebra 0.20.0",
+ "num-traits 0.2.11",
+ "petgraph",
+ "slab",
+ "slotmap",
+ "smallvec 1.4.0",
 ]
 
 [[package]]
@@ -1206,6 +1295,28 @@ checksum = "0b471253da97532da4b61552249c521e01e736071f71c1a4f7ebbfbf0a06aad6"
 dependencies = [
  "memchr",
  "version_check",
+]
+
+[[package]]
+name = "nphysics2d"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "90837c1c5842fd238c4826dad5f216734bd624d415e75af5c085779f033a21d2"
+dependencies = [
+ "alga",
+ "approx",
+ "bitflags",
+ "downcast-rs",
+ "either",
+ "generational-arena",
+ "instant",
+ "lazy_static",
+ "nalgebra 0.20.0",
+ "ncollide2d",
+ "num-traits 0.2.11",
+ "slotmap",
+ "smallvec 1.4.0",
+ "stdweb 0.4.20",
 ]
 
 [[package]]
@@ -1354,7 +1465,7 @@ dependencies = [
  "libc",
  "redox_syscall",
  "rustc_version",
- "smallvec",
+ "smallvec 0.6.13",
  "winapi",
 ]
 
@@ -1369,6 +1480,16 @@ name = "percent-encoding"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d4fd5641d01c8f18a23da7b6fe29298ff4b55afcccdf78973b24cf3175fee32e"
+
+[[package]]
+name = "petgraph"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "467d164a6de56270bd7c4d070df81d07beace25012d5103ced4e9ff08d6afdb7"
+dependencies = [
+ "fixedbitset",
+ "indexmap",
+]
 
 [[package]]
 name = "pkg-config"
@@ -1535,6 +1656,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rand_distr"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "96977acbdd3a6576fb1d27391900035bf3863d4a16422973a409b488cf29ffb2"
+dependencies = [
+ "rand 0.7.3",
+]
+
+[[package]]
 name = "rand_hc"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1682,7 +1812,7 @@ dependencies = [
  "lazy_static",
  "lewton",
  "minimp3",
- "nalgebra",
+ "nalgebra 0.18.1",
 ]
 
 [[package]]
@@ -1867,6 +1997,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "slab"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c111b5bd5695e56cffe5129854aa230b39c93a305372fdbb2668ca2394eea9f8"
+
+[[package]]
 name = "slice-deque"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1878,6 +2014,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "slotmap"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c46a3482db8f247956e464d783693ece164ca056e6e67563ee5505bdb86452cd"
+
+[[package]]
 name = "smallvec"
 version = "0.6.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1885,6 +2027,12 @@ checksum = "f7b0758c52e15a8b5e3691eae6cc559f08eee9406e548a4477ba4e67770a82b6"
 dependencies = [
  "maybe-uninit",
 ]
+
+[[package]]
+name = "smallvec"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c7cb5678e1615754284ec264d9bb5b4c27d2018577fd90ac0ceb578591ed5ee4"
 
 [[package]]
 name = "smart-default"
@@ -2022,6 +2170,16 @@ dependencies = [
  "lzw",
  "num-derive",
  "num-traits 0.2.11",
+]
+
+[[package]]
+name = "time"
+version = "0.1.43"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ca8a50ef2360fbd1eeb0ecd46795a87a19024eb4b53c5dc916ca1fd95fe62438"
+dependencies = [
+ "libc",
+ "winapi",
 ]
 
 [[package]]
