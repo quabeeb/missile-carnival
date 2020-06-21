@@ -1,7 +1,11 @@
 # missile-carnival
 Not really a carnival.
 
+## Moving/Shooting
 <img src="docs/shooting-moving.gif">
+
+## Homing Missiles
+<img src="docs/homing-missiles.gif">
 
 ## Building/Running
 
