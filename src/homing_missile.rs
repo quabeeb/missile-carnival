@@ -1,6 +1,8 @@
 use nalgebra::{Vector2, Vector3};
 use nalgebra::base::Unit;
 
+use crate::enemy;
+
 const MAX_MISSILE_VELOCITY: f32 = -10.0;
 
 type Fec2 = Vector2<f32>;
@@ -39,15 +41,20 @@ impl Missile {
         }
     }
 
-    pub fn set_new_position(&mut self) {
+    pub fn set_new_position_empty(&mut self) {
+        self.position += self.rotation_vec * self.velocity;
+        self.velocity = MAX_MISSILE_VELOCITY.max(self.velocity + self.acceleration);
+    }
+
+    pub fn set_new_position(&mut self, target: &enemy::Enemy) {
         self.position += self.rotation_vec * self.velocity;
         self.velocity = MAX_MISSILE_VELOCITY.max(self.velocity + self.acceleration);
 
-        let desired_direction = Unit::new_normalize(fec3ify(Fec2::new(300.0, 400.0) - self.position));
+        let desired_direction = Unit::new_normalize(fec3ify(target.position - self.position));
         let current_direction = Unit::new_normalize(fec3ify(self.rotation_vec));
         let rotate_amount = desired_direction.cross(current_direction.as_ref())[2];
 
-        self.rotation += rotate_amount;
+        self.rotation += rotate_amount/5.0;
         self.rotation_vec = vec_from_rotation(self.rotation);
     }
 }
