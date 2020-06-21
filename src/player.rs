@@ -4,6 +4,7 @@ use ggez::{graphics, Context, GameResult, nalgebra::Point2};
 use nalgebra::Vector2;
 use std::f64::consts::PI;
 
+use crate::enemy_group;
 use crate::missile_generator;
 
 type Fec2 = Vector2<f32>;
@@ -74,9 +75,9 @@ impl Player {
         }
     }
 
-    pub fn update(&mut self) {
+    pub fn update(&mut self, enemies: &enemy_group::EnemyGroup) {
         for m in self.missile_generator_list.iter_mut() {
-            m.update(self.position);
+            m.update(self.position, enemies);
         }
     }
 
