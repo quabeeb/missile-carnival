@@ -1,9 +1,13 @@
 use std::collections::HashSet;
 use ggez::event::KeyCode;
-use ggez::nalgebra::Vector2;
+use nalgebra::Vector2;
 use ggez::{graphics, Context, GameResult};
+use std::f64::consts::PI;
 
+use crate::homing_missile;
 use crate::straight_missile;
+use crate::enemy;
+use crate::enemy_group;
 
 type Fec2 = Vector2<f32>;
 
@@ -15,7 +19,7 @@ const MAXIMUM_GENERATOR_RADIUS: f32 = 30.0;
 
 pub struct MissileGenerator {
     position: Fec2,
-    pub missile_list: Vec<straight_missile::Missile>,
+    pub missile_list: Vec<homing_missile::Missile>,
     missile_toggle: i32,
     iteration: i32,
     radius: f32,
@@ -24,7 +28,7 @@ pub struct MissileGenerator {
 
 impl MissileGenerator {
     pub fn new(position: Fec2, radius: f32, rotation: f32) -> Self {
-        let missile_list: Vec<straight_missile::Missile> = Vec::new();
+        let missile_list: Vec<homing_missile::Missile> = Vec::new();
 
         MissileGenerator {
             position: position,
@@ -36,13 +40,35 @@ impl MissileGenerator {
         }
     }
 
+    fn get_closest_enemy(&self, enemy_group: &enemy_group::EnemyGroup) -> Option<enemy::Enemy> {
+        let mut min_distance: f32 = -1.0;
+        let mut closest_enemy: Option<enemy::Enemy> = None;
+
+        for enemy in &enemy_group.enemy_list {
+            let distance_vec = self.position - enemy.position;
+            let distance: f32 = distance_vec[0].powf(2.0) + distance_vec[1].powf(2.0);
+
+            if min_distance == -1.0 {
+                min_distance = distance;
+            }
+            
+            if distance <= min_distance {
+                min_distance = distance;
+                closest_enemy = Some(enemy::Enemy::new(Fec2::new(enemy.position[0], enemy.position[1])));
+            }
+        }
+
+        closest_enemy
+    }
+
     pub fn add_missile(&mut self) {
         if self.missile_toggle % 2 == 0 {
-            let temp_rotation = 0.0;
+            let temp_rotation = (PI/2.0) as f32;
             // let temp_rotation = 4.71 - self.rotation_in_radians;
 
             let iteration_mod = (self.iteration/4 % 11) as usize;
-            let new_missile = straight_missile::Missile::new(self.position, 0.0, -5.0, temp_rotation, iteration_mod);
+            // let new_missile = straight_missile::Missile::new(self.position, 0.0, -5.0, temp_rotation, iteration_mod);
+            let new_missile = homing_missile::Missile::new(self.position, 0.0, -5.0, temp_rotation, iteration_mod);
 
             self.missile_list.push(new_missile);
 
@@ -57,9 +83,9 @@ impl MissileGenerator {
         Ok(())
     }
 
-    pub fn update(&mut self, player_position: Fec2) {
+    pub fn update(&mut self, player_position: Fec2, enemies: &enemy_group::EnemyGroup) {
         self.increment_orbit(player_position);
-        self.update_missiles();
+        self.update_missiles(enemies);
     }
 
     pub fn increment_orbit(&mut self, player_position: Fec2) {
@@ -82,13 +108,30 @@ impl MissileGenerator {
         }
     }
 
-    fn update_missiles(&mut self) { 
-        for m in self.missile_list.iter_mut() {
-            m.set_new_position();
-        }
+    fn update_missiles(&mut self, enemies: &enemy_group::EnemyGroup) {
+        let target = self.get_closest_enemy(enemies);
 
-        self.missile_list.retain(|x| x.position[1] > -20.0);
+        match target {
+            Some(x) => {
+                for m in self.missile_list.iter_mut() {
+                    m.set_new_position(&x);
+                }
+            },
+            None => {
+                for m in self.missile_list.iter_mut() {
+                    m.set_new_position_empty();
+                }
+            }
+        } 
+
+        self.missile_list.retain(|missile| 
+            missile.position[1] > 0.0
+            && missile.position[1] < 600.0
+            && missile.position[0] > 0.0
+            && missile.position[0] < 800.0
+        );
     }
+
 
     fn draw_missile_generator(&mut self, ctx: &mut Context) -> GameResult<()> {
         let missile_generator_color = [1.0, 0.0, 1.0, 1.0].into();

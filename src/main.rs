@@ -1,13 +1,17 @@
 extern crate rand;
 
+use rand::Rng;
 use std::path;
+use ggez::event::KeyCode;
 use ggez::{input, graphics, Context, ContextBuilder, GameResult};
 use ggez::event::{self, EventHandler};
 use ggez::timer;
-use ggez::nalgebra::Vector2;
+use nalgebra::Vector2;
 use ggez::filesystem;
 
+mod enemy;
 mod enemy_group;
+mod homing_missile;
 mod straight_missile;
 mod player;
 mod missile_generator;
@@ -55,12 +59,6 @@ fn load_enemy_sprite(ctx: &mut Context) -> graphics::spritebatch::SpriteBatch {
     graphics::spritebatch::SpriteBatch::new(image)
 }
 
-fn load_enemy_missile_sprite(ctx: &mut Context) -> graphics::spritebatch::SpriteBatch {
-    let image = graphics::Image::new(ctx, "/rainbow-missiles/00.png").unwrap();
-
-    graphics::spritebatch::SpriteBatch::new(image)
-}
-
 struct State {
     player: player::Player,
     enemy_group: enemy_group::EnemyGroup,
@@ -70,14 +68,13 @@ impl State {
     pub fn new(_ctx: &mut Context) -> State {
         let image_vec = load_missile_sprites(_ctx);
         let enemy_sprite = load_enemy_sprite(_ctx);
-        let enemy_missile_sprite = load_enemy_missile_sprite(_ctx);
 
         let initial_position = Fec2::new(400.0, 600.0);
         let enemy_initial_position = Fec2::new(400.0, 300.0);
         
         let state = State {
             player: player::Player::new(initial_position, image_vec),
-            enemy_group: enemy_group::EnemyGroup::new(enemy_initial_position, enemy_sprite, enemy_missile_sprite),
+            enemy_group: enemy_group::EnemyGroup::new(enemy_sprite),
         };
 
         state
@@ -88,8 +85,15 @@ impl EventHandler for State {
     fn update(&mut self, ctx: &mut Context) -> GameResult<()> {
         while timer::check_update_time(ctx, DESIRED_FPS) {        
             let pressed_keys = input::keyboard::pressed_keys(ctx);
+
+            if pressed_keys.contains(&KeyCode::Q) {
+                let mut rng = rand::thread_rng();
+                let rng_enemy: enemy::Enemy = enemy::Enemy::new(Fec2::new(rng.gen_range(0.0, 600.0), rng.gen_range(0.0, 600.0)));
+                self.enemy_group.add_enemy(rng_enemy);
+            }
+
             self.player.handle_input(pressed_keys);    
-            self.player.update();
+            self.player.update(&self.enemy_group);
 
             // println!("{:0}", ggez::timer::fps(ctx));
         }

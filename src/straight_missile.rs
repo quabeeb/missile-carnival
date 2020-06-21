@@ -1,4 +1,4 @@
-use ggez::nalgebra::Vector2;
+use nalgebra::Vector2;
 
 type Fec2 = Vector2<f32>;
 const MAX_MISSILE_VELOCITY: f32 = -10.0;
