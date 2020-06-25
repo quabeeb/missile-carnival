@@ -4,6 +4,8 @@ use nalgebra::Vector2;
 use ggez::{graphics, Context, GameResult};
 use std::f64::consts::PI;
 
+
+use crate::missile;
 use crate::homing_missile;
 use crate::straight_missile;
 use crate::enemy;
@@ -11,15 +13,23 @@ use crate::enemy_group;
 
 type Fec2 = Vector2<f32>;
 
-const MISSILE_GENERATOR_HEIGHT: i32 = 10;
-const MISSILE_GENERATOR_WEIGHT: i32 = 10;
+const MISSILE_GENERATOR_HEIGHT: f32 = 11.0;
+const MISSILE_GENERATOR_WIDTH: f32 = 11.0;
 
 const MINIMUM_GENERATOR_RADIUS: f32 = 15.0;
 const MAXIMUM_GENERATOR_RADIUS: f32 = 30.0;
 
+fn check_bounds(missile: &Box<missile::Missile>) -> bool {
+    // true
+    missile.get_position()[1] > 0.0
+    && missile.get_position()[1] < 600.0
+    && missile.get_position()[0] > 0.0
+    && missile.get_position()[0] < 800.0
+}
+
 pub struct MissileGenerator {
     position: Fec2,
-    pub missile_list: Vec<homing_missile::Missile>,
+    pub missile_list: Vec<Box<missile::Missile>>,
     missile_toggle: i32,
     iteration: i32,
     radius: f32,
@@ -29,7 +39,7 @@ pub struct MissileGenerator {
 
 impl MissileGenerator {
     pub fn new(position: Fec2, radius: f32, rotation: f32, spritebatch_len: usize) -> Self {
-        let missile_list: Vec<homing_missile::Missile> = Vec::new();
+        let missile_list: Vec<Box<missile::Missile>> = Vec::new();
 
         MissileGenerator {
             position: position,
@@ -46,10 +56,12 @@ impl MissileGenerator {
         if self.missile_toggle % 2 == 0 {
             let temp_rotation = (3.0*PI/2.0) as f32;
 
-            let iteration_mod = (self.iteration/4) as usize % self.spritebatch_len;
-            let new_missile = homing_missile::Missile::new(self.position, 0.0, 5.0, temp_rotation, iteration_mod);
+            let missile_generator_offset_position = Fec2::new(self.position[0] + MISSILE_GENERATOR_WIDTH/2.0, self.position[1] + MISSILE_GENERATOR_HEIGHT/2.0);
 
-            self.missile_list.push(new_missile);
+            let iteration_mod = (self.iteration/4) as usize % self.spritebatch_len;
+            let new_missile = homing_missile::HomingMissile::new(missile_generator_offset_position, 0.0, 5.0, temp_rotation, iteration_mod);
+
+            self.missile_list.push(Box::new(new_missile));
 
             self.iteration += 1;
         }
@@ -89,17 +101,13 @@ impl MissileGenerator {
 
     fn update_missiles(&mut self, enemies: &enemy_group::EnemyGroup) {
         for m in self.missile_list.iter_mut() {
-            m.update_homing_missile(enemies);
+            m.update(enemies);
         }
 
         self.missile_list.retain(|missile| 
-            missile.position[1] > 0.0
-            && missile.position[1] < 600.0
-            && missile.position[0] > 0.0
-            && missile.position[0] < 800.0
+            check_bounds(missile)
         );
     }
-
 
     fn draw_missile_generator(&mut self, ctx: &mut Context) -> GameResult<()> {
         let missile_generator_color = [1.0, 0.0, 1.0, 1.0].into();
@@ -110,8 +118,8 @@ impl MissileGenerator {
             graphics::Rect::new_i32(
                 self.position[0] as i32,
                 self.position[1] as i32,
-                MISSILE_GENERATOR_HEIGHT,
-                MISSILE_GENERATOR_WEIGHT 
+                MISSILE_GENERATOR_HEIGHT as i32,
+                MISSILE_GENERATOR_WIDTH as i32 
             ),
             missile_generator_color
         )?;

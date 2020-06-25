@@ -2,17 +2,16 @@ use nalgebra::{Vector2, Vector3};
 use nalgebra::base::Unit;
 use std::f64::consts::PI;
 
+use crate::missile;
 use crate::enemy_group;
 use crate::enemy;
 
-const MAX_MISSILE_VELOCITY: f32 = 10.0;
-const MISSILE_WIDTH: f32 = 10.0;
-const MISSILE_HEIGHT: f32 = 10.0;
+const MAX_MISSILE_VELOCITY: f32 = 15.0;
 
 type Fec2 = Vector2<f32>;
 type Fec3 = Vector3<f32>;
 
-pub struct Missile {
+pub struct HomingMissile {
     pub rotation: f32,
     pub draw_rotation: f32,
     pub rotation_vec: Fec2,
@@ -32,16 +31,15 @@ fn fec3ify(vec2: Fec2) -> Fec3 {
     Fec3::new(vec2[0], vec2[1], 0.0)
 }
 
-impl Missile {
+impl HomingMissile {
     pub fn new(position: Fec2, velocity: f32, acceleration: f32, rotation: f32, spritebatch_index: usize) -> Self {
         let rotation_vec = vec_from_rotation(rotation);
-        let offset_position = Fec2::new(position[0] + MISSILE_WIDTH/2.0, position[1] + MISSILE_HEIGHT/2.0);
 
-        Missile {
+        HomingMissile {
             rotation: rotation,
             draw_rotation: rotation + (PI/2.0) as f32,
             rotation_vec: rotation_vec,
-            position: offset_position,
+            position: position,
             velocity: velocity,
             acceleration: acceleration,
             spritebatch_index: spritebatch_index,
@@ -95,9 +93,27 @@ impl Missile {
         let current_direction = Unit::new_normalize(fec3ify(self.rotation_vec));
         let rotate_amount = desired_direction.cross(current_direction.as_ref())[2];
 
-        self.rotation -= rotate_amount/2.0;
+        self.rotation -= rotate_amount/1.4;
         self.draw_rotation = self.rotation + (PI/2.0) as f32;
 
         self.rotation_vec = vec_from_rotation(self.rotation);
+    }
+}
+
+impl missile::Missile for HomingMissile {
+    fn update(&mut self, enemies: &enemy_group::EnemyGroup) {
+        self.update_homing_missile(enemies);
+    }
+
+    fn get_position(&self) -> Fec2 {
+        self.position
+    }
+
+    fn get_spritebatch_index(&self) -> usize {
+        self.spritebatch_index
+    }
+
+    fn get_draw_rotation(&self) -> f32 {
+        self.draw_rotation
     }
 }
