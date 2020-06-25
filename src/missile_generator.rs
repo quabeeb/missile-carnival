@@ -20,7 +20,6 @@ const MINIMUM_GENERATOR_RADIUS: f32 = 15.0;
 const MAXIMUM_GENERATOR_RADIUS: f32 = 30.0;
 
 fn check_bounds(missile: &Box<missile::Missile>) -> bool {
-    // true
     missile.get_position()[1] > 0.0
     && missile.get_position()[1] < 600.0
     && missile.get_position()[0] > 0.0
@@ -58,7 +57,7 @@ impl MissileGenerator {
 
             let missile_generator_offset_position = Fec2::new(self.position[0] + MISSILE_GENERATOR_WIDTH/2.0, self.position[1] + MISSILE_GENERATOR_HEIGHT/2.0);
 
-            let iteration_mod = (self.iteration/4) as usize % self.spritebatch_len;
+            let iteration_mod = (self.iteration/2) as usize % self.spritebatch_len;
             let new_missile = homing_missile::HomingMissile::new(missile_generator_offset_position, 0.0, 5.0, temp_rotation, iteration_mod);
 
             self.missile_list.push(Box::new(new_missile));
@@ -84,7 +83,7 @@ impl MissileGenerator {
         let new_y = player_position[1] + self.radius * self.rotation_in_radians.sin();
         self.position = Fec2::new(new_x, new_y);
 
-        // self.rotation_in_radians += 0.04;
+        self.rotation_in_radians += 0.04;
 
         if self.rotation_in_radians > 6.28 {
             self.rotation_in_radians = 0.0;
