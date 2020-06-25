@@ -9,8 +9,8 @@ use crate::missile_generator;
 
 type Fec2 = Vector2<f32>;
 
-const PLAYER_HEIGHT: f32 = 10.0;
-const PLAYER_WIDTH: f32 = 10.0;
+const PLAYER_HEIGHT: f32 = 11.0;
+const PLAYER_WIDTH: f32 = 11.0;
 
 pub struct Player {
     pub position: Fec2,
@@ -117,12 +117,16 @@ impl Player {
 
         for missile_generator in &self.missile_generator_list {
             for missile in &missile_generator.missile_list {
+                let missile_position = missile.get_position();
+                let missile_draw_rotation = missile.get_draw_rotation();
+                let missile_spritebatch_index = missile.get_spritebatch_index();
+
                 let p = graphics::DrawParam::new()
-                    .dest(Point2::new(missile.position[0], missile.position[1]))
-                    .rotation(missile.draw_rotation)
+                    .dest(Point2::new(missile_position[0], missile_position[1]))
+                    .rotation(missile_draw_rotation)
                     .offset(Point2::new(0.5, 0.5));
                 
-                self.spritebatches[missile.spritebatch_index].add(p);
+                self.spritebatches[missile_spritebatch_index].add(p);
             }
         }
 

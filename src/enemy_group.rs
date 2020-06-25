@@ -14,7 +14,7 @@ pub struct EnemyGroup {
 impl EnemyGroup {
     pub fn new(enemy_spritebatch: graphics::spritebatch::SpriteBatch) -> Self {
         let enemy_list: Vec<enemy::Enemy> = Vec::new();
-        let missile_list: Vec<straight_missile::Missile> = Vec::new();
+        let missile_list: Vec<straight_missile::StraightMissile> = Vec::new();
 
         EnemyGroup {
             enemy_list: enemy_list,

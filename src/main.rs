@@ -15,6 +15,7 @@ mod homing_missile;
 mod straight_missile;
 mod player;
 mod missile_generator;
+mod missile;
 
 type Fec2 = Vector2<f32>;
 
