@@ -11,6 +11,7 @@ Not really a carnival.
 
 ### With rotation
 <img src="docs/homing-rotated-missiles.gif" width="600" />
+This gif has really bad compression, so this webm shows the actual speed: https://gfycat.com/fancydelightfulharrier
 
 ## Building/Running
 
