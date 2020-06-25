@@ -93,7 +93,7 @@ impl HomingMissile {
         let current_direction = Unit::new_normalize(fec3ify(self.rotation_vec));
         let rotate_amount = desired_direction.cross(current_direction.as_ref())[2];
 
-        self.rotation -= rotate_amount/1.4;
+        self.rotation -= rotate_amount/2.0;
         self.draw_rotation = self.rotation + (PI/2.0) as f32;
 
         self.rotation_vec = vec_from_rotation(self.rotation);
