@@ -39,7 +39,6 @@ fn main() {
 
 fn load_missile_sprites(ctx: &mut Context) -> Vec<graphics::spritebatch::SpriteBatch> {
     let mut image_vec: Vec<graphics::spritebatch::SpriteBatch> = Vec::new();
-
     let mut rainbow_missiles_dir: Vec<path::PathBuf> = filesystem::read_dir(ctx, "/rainbow-missiles").unwrap().collect();
 
     rainbow_missiles_dir.sort();
@@ -70,8 +69,7 @@ impl State {
         let enemy_sprite = load_enemy_sprite(_ctx);
 
         let initial_position = Fec2::new(400.0, 600.0);
-        let enemy_initial_position = Fec2::new(400.0, 300.0);
-        
+                
         let state = State {
             player: player::Player::new(initial_position, image_vec),
             enemy_group: enemy_group::EnemyGroup::new(enemy_sprite),
@@ -95,7 +93,7 @@ impl EventHandler for State {
             self.player.handle_input(pressed_keys);    
             self.player.update(&self.enemy_group);
 
-            // println!("{:0}", ggez::timer::fps(ctx));
+            println!("{:0}", ggez::timer::fps(ctx));
         }
 
         Ok(())
