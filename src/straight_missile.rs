@@ -1,7 +1,7 @@
 use nalgebra::Vector2;
 
 type Fec2 = Vector2<f32>;
-const MAX_MISSILE_VELOCITY: f32 = -10.0;
+const MAX_MISSILE_VELOCITY: f32 = 10.0;
 
 pub struct Missile {
     pub rotation_vec: Fec2,
@@ -32,6 +32,6 @@ impl Missile {
 
     pub fn set_new_position(&mut self) {
         self.position += self.rotation_vec * self.velocity;
-        self.velocity = MAX_MISSILE_VELOCITY.max(self.velocity + self.acceleration);
+        self.velocity = MAX_MISSILE_VELOCITY.min(self.velocity + self.acceleration);
     }
 }

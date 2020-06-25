@@ -9,8 +9,8 @@ use crate::missile_generator;
 
 type Fec2 = Vector2<f32>;
 
-const PLAYER_HEIGHT: f32 = 9.0;
-const PLAYER_WIDTH: f32 = 9.0;
+const PLAYER_HEIGHT: f32 = 10.0;
+const PLAYER_WIDTH: f32 = 10.0;
 
 pub struct Player {
     pub position: Fec2,
@@ -57,16 +57,17 @@ impl Player {
         let mut missile_generator_list: Vec<missile_generator::MissileGenerator> = Vec::new();
 
         let radius = 30.0;
+        let spritebatches_len = spritebatches.len();
 
-        let right_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, 0.0);
-        let bottom_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, (PI/2.0) as f32);
-        let left_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, PI as f32);
-        let top_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, (PI*3.0/2.0) as f32 );        
+        let right_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, 0.0, spritebatches_len);
+        let bottom_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, (PI/2.0) as f32, spritebatches_len);
+        let left_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, PI as f32, spritebatches_len);
+        let top_missile_generator = missile_generator::MissileGenerator::new(starting_position, radius, (PI*3.0/2.0) as f32, spritebatches_len);
 
         missile_generator_list.push(right_missile_generator);
-        missile_generator_list.push(left_missile_generator);
-        missile_generator_list.push(top_missile_generator);
         missile_generator_list.push(bottom_missile_generator);
+        missile_generator_list.push(left_missile_generator);
+        missile_generator_list.push(top_missile_generator);        
         
         Player {
             position: starting_position,
@@ -117,8 +118,8 @@ impl Player {
         for missile_generator in &self.missile_generator_list {
             for missile in &missile_generator.missile_list {
                 let p = graphics::DrawParam::new()
-                    .dest(Point2::new(missile.position[0] + 5.0, missile.position[1] + 5.0))
-                    .rotation((PI/4.0) as f32)
+                    .dest(Point2::new(missile.position[0], missile.position[1]))
+                    .rotation(missile.draw_rotation)
                     .offset(Point2::new(0.5, 0.5));
                 
                 self.spritebatches[missile.spritebatch_index].add(p);
@@ -128,7 +129,7 @@ impl Player {
         for spritebatch in &self.spritebatches {
             graphics::draw(ctx, spritebatch, param)?;
         }
-
+        
         for index in 0..self.spritebatches.len() {
             self.spritebatches[index].clear();
         }

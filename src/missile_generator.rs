@@ -24,10 +24,11 @@ pub struct MissileGenerator {
     iteration: i32,
     radius: f32,
     rotation_in_radians: f32,
+    spritebatch_len: usize,
 }
 
 impl MissileGenerator {
-    pub fn new(position: Fec2, radius: f32, rotation: f32) -> Self {
+    pub fn new(position: Fec2, radius: f32, rotation: f32, spritebatch_len: usize) -> Self {
         let missile_list: Vec<homing_missile::Missile> = Vec::new();
 
         MissileGenerator {
@@ -37,17 +38,16 @@ impl MissileGenerator {
             iteration: 0,
             radius: radius,
             rotation_in_radians: rotation,
+            spritebatch_len: spritebatch_len,
         }
     }
 
     pub fn add_missile(&mut self) {
         if self.missile_toggle % 2 == 0 {
-            let temp_rotation = (PI/2.0) as f32;
-            // let temp_rotation = 4.71 - self.rotation_in_radians;
+            let temp_rotation = (3.0*PI/2.0) as f32;
 
-            let iteration_mod = (self.iteration/4 % 11) as usize;
-            // let new_missile = straight_missile::Missile::new(self.position, 0.0, -5.0, temp_rotation, iteration_mod);
-            let new_missile = homing_missile::Missile::new(self.position, 0.0, -5.0, temp_rotation, iteration_mod);
+            let iteration_mod = (self.iteration/4) as usize % self.spritebatch_len;
+            let new_missile = homing_missile::Missile::new(self.position, 0.0, 5.0, temp_rotation, iteration_mod);
 
             self.missile_list.push(new_missile);
 
@@ -72,7 +72,7 @@ impl MissileGenerator {
         let new_y = player_position[1] + self.radius * self.rotation_in_radians.sin();
         self.position = Fec2::new(new_x, new_y);
 
-        self.rotation_in_radians += 0.04;
+        // self.rotation_in_radians += 0.04;
 
         if self.rotation_in_radians > 6.28 {
             self.rotation_in_radians = 0.0;
