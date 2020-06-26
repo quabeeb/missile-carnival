@@ -39,14 +39,20 @@ impl StraightMissile {
     }
 }
 
-// impl missile::Missile for StraightMissile {
-//     fn update(&mut self, enemies: &enemy_group::EnemyGroup) {
-//         self.set_new_position();
-//     }
+impl missile::Missile for StraightMissile {
+    fn update(&mut self, enemies: &enemy_group::EnemyGroup) {
+        self.set_new_position();
+    }
 
-//     fn get_position(&self){}
+    fn get_position(&self) -> Fec2 {
+        self.position
+    }
 
-//     fn get_rotation(&self){}
+    fn get_spritebatch_index(&self) -> usize {
+        self.spritebatch_index
+    }
 
-//     fn get_draw_rotation(&self){}
-// }
+    fn get_draw_rotation(&self) -> f32 {
+        0.0
+    }
+}
