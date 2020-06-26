@@ -19,16 +19,16 @@ const MISSILE_GENERATOR_WIDTH: f32 = 11.0;
 const MINIMUM_GENERATOR_RADIUS: f32 = 15.0;
 const MAXIMUM_GENERATOR_RADIUS: f32 = 30.0;
 
-fn check_bounds(missile: &Box<missile::Missile>) -> bool {
+fn check_bounds(missile: &Box<dyn missile::Missile>) -> bool {
     missile.get_position()[1] > 0.0
-    && missile.get_position()[1] < 600.0
+    && missile.get_position()[1] < 1080.0
     && missile.get_position()[0] > 0.0
-    && missile.get_position()[0] < 800.0
+    && missile.get_position()[0] < 1920.0
 }
 
 pub struct MissileGenerator {
     position: Fec2,
-    pub missile_list: Vec<Box<missile::Missile>>,
+    pub missile_list: Vec<Box<dyn missile::Missile>>,
     missile_toggle: i32,
     iteration: i32,
     radius: f32,
@@ -38,7 +38,7 @@ pub struct MissileGenerator {
 
 impl MissileGenerator {
     pub fn new(position: Fec2, radius: f32, rotation: f32, spritebatch_len: usize) -> Self {
-        let missile_list: Vec<Box<missile::Missile>> = Vec::new();
+        let missile_list: Vec<Box<dyn missile::Missile>> = Vec::new();
 
         MissileGenerator {
             position: position,
@@ -55,7 +55,7 @@ impl MissileGenerator {
         if self.missile_toggle % 2 == 0 {
             let temp_rotation = (3.0*PI/2.0) as f32;
 
-            let missile_generator_offset_position = Fec2::new(self.position[0] + MISSILE_GENERATOR_WIDTH/2.0, self.position[1] + MISSILE_GENERATOR_HEIGHT/2.0);
+            let missile_generator_offset_position = Fec2::new(self.position[0] + MISSILE_GENERATOR_WIDTH/2.0, self.position[1] + MISSILE_GENERATOR_HEIGHT/2.0 - 10.0);
 
             let iteration_mod = (self.iteration/2) as usize % self.spritebatch_len;
             let new_missile = homing_missile::HomingMissile::new(missile_generator_offset_position, 0.0, 5.0, temp_rotation, iteration_mod);
@@ -109,7 +109,7 @@ impl MissileGenerator {
     }
 
     fn draw_missile_generator(&mut self, ctx: &mut Context) -> GameResult<()> {
-        let missile_generator_color = [1.0, 0.0, 1.0, 1.0].into();
+        let missile_generator_color = [0.0, 0.0, 1.0, 0.3].into();
 
         let player = graphics::Mesh::new_rectangle(
             ctx,
