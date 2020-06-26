@@ -19,40 +19,6 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn handle_input(&mut self, pressed_keys: &HashSet<KeyCode>) {
-        let mut incrementer = 3.0;
-
-        if pressed_keys.contains(&KeyCode::LShift) {
-            incrementer = 1.0;
-        }
-
-        if pressed_keys.contains(&KeyCode::Up) {
-            self.position -= Fec2::new(0.0, incrementer);
-        }
-
-        if pressed_keys.contains(&KeyCode::Down) {
-            self.position += Fec2::new(0.0, incrementer);
-        }
-
-        if pressed_keys.contains(&KeyCode::Left) {
-            self.position -= Fec2::new(incrementer, 0.0);
-        }
-
-        if pressed_keys.contains(&KeyCode::Right) {
-            self.position += Fec2::new(incrementer, 0.0);
-        }
-
-        if pressed_keys.contains(&KeyCode::Z) {
-            for m in self.missile_generator_list.iter_mut() {
-                m.add_missile();
-            }
-        }
-
-        for m in self.missile_generator_list.iter_mut() {
-            m.handle_input(pressed_keys);
-        }        
-    }
-
     pub fn new(starting_position: Fec2, spritebatches: Vec<graphics::spritebatch::SpriteBatch>) -> Player {
         let mut missile_generator_list: Vec<missile_generator::MissileGenerator> = Vec::new();
 
@@ -80,6 +46,40 @@ impl Player {
         for m in self.missile_generator_list.iter_mut() {
             m.update(self.position, enemies);
         }
+    }
+
+    pub fn handle_input(&mut self, pressed_keys: &HashSet<KeyCode>) {
+        let mut incrementer = 5.0;
+
+        if pressed_keys.contains(&KeyCode::LShift) {
+            incrementer = 2.0;
+        }
+
+        if pressed_keys.contains(&KeyCode::Up) {
+            self.position -= Fec2::new(0.0, incrementer);
+        }
+
+        if pressed_keys.contains(&KeyCode::Down) {
+            self.position += Fec2::new(0.0, incrementer);
+        }
+
+        if pressed_keys.contains(&KeyCode::Left) {
+            self.position -= Fec2::new(incrementer, 0.0);
+        }
+
+        if pressed_keys.contains(&KeyCode::Right) {
+            self.position += Fec2::new(incrementer, 0.0);
+        }
+
+        if pressed_keys.contains(&KeyCode::Z) {
+            for m in self.missile_generator_list.iter_mut() {
+                m.add_missile();
+            }
+        }
+
+        for m in self.missile_generator_list.iter_mut() {
+            m.handle_input(pressed_keys);
+        }        
     }
 
     pub fn draw(&mut self, ctx: &mut Context) -> GameResult<()> {
