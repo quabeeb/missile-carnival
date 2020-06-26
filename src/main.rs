@@ -20,12 +20,15 @@ mod missile;
 type Fec2 = Vector2<f32>;
 
 const DESIRED_FPS: u32 = 60;
+const WINDOW_WIDTH: f32 = 1920.0;
+const WINDOW_HEIGHT: f32 = 1080.0;
 
 fn main() {
     let resource_dir = path::PathBuf::from("./resources");
 
     let (mut ctx, mut event_loop) = ContextBuilder::new("cuban-missie-crisis-test", "Andy")
         .window_setup(ggez::conf::WindowSetup::default().title("missile-crisis"))
+        .window_mode(ggez::conf::WindowMode::default().dimensions(WINDOW_WIDTH, WINDOW_HEIGHT))
         .add_resource_path(resource_dir)
 		.build()
 		.expect("Could not create ggez context!");
@@ -69,7 +72,7 @@ impl State {
         let image_vec = load_missile_sprites(_ctx);
         let enemy_sprite = load_enemy_sprite(_ctx);
 
-        let initial_position = Fec2::new(400.0, 600.0);
+        let initial_position = Fec2::new(WINDOW_WIDTH/2.0, WINDOW_HEIGHT - 50.0);
                 
         let state = State {
             player: player::Player::new(initial_position, image_vec),
@@ -87,7 +90,11 @@ impl EventHandler for State {
 
             if pressed_keys.contains(&KeyCode::Q) {
                 let mut rng = rand::thread_rng();
-                let rng_enemy: enemy::Enemy = enemy::Enemy::new(Fec2::new(rng.gen_range(0.0, 600.0), rng.gen_range(0.0, 600.0)));
+
+                let rng_enemy: enemy::Enemy = enemy::Enemy::new(
+                    Fec2::new(rng.gen_range(0.0, 1920.0), rng.gen_range(0.0, 1080.0))
+                );
+                
                 self.enemy_group.add_enemy(rng_enemy);
             }
 
