@@ -1,5 +1,9 @@
 use nalgebra::{Vector2, Vector3};
 use nalgebra::base::Unit;
+use ncollide2d::math::Point;
+use ncollide2d::bounding_volume::aabb::AABB;
+use ncollide2d::math::Isometry;
+use nalgebra::geometry::UnitComplex;
 use std::f64::consts::PI;
 
 use crate::missile;
@@ -115,5 +119,21 @@ impl missile::Missile for HomingMissile {
 
     fn get_draw_rotation(&self) -> f32 {
         self.draw_rotation
+    }
+
+    fn get_bounding_volume(&self) -> AABB<f32> {
+        let top_left_point = Point::new(self.position[0], self.position[1]);
+        let bot_right_point = Point::new(self.position[0] + 3.0, self.position[1] + 30.0);
+        
+        let mut aabb = AABB::new(top_left_point, bot_right_point);
+
+        let translation = Isometry::translation(-1.5, -15.0);
+        aabb = aabb.transform_by(&translation);
+
+        let rot = UnitComplex::new(self.draw_rotation);
+        let rotation = Isometry::rotation_wrt_point(rot, aabb.center());
+        aabb = aabb.transform_by(&rotation);
+
+        aabb
     }
 }
