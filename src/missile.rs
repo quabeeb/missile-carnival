@@ -11,4 +11,5 @@ pub trait Missile {
     fn get_draw_rotation(&self) -> f32;
     fn get_spritebatch_index(&self) -> usize;
     fn get_bounding_volume(&self) -> AABB<f32>;
+    fn get_collided(&self) -> bool;
 }

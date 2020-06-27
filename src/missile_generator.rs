@@ -4,11 +4,9 @@ use nalgebra::Vector2;
 use ggez::{graphics, Context, GameResult};
 use std::f64::consts::PI;
 
-
 use crate::missile;
 use crate::homing_missile;
 use crate::straight_missile;
-use crate::enemy;
 use crate::enemy_group;
 
 type Fec2 = Vector2<f32>;
@@ -24,6 +22,7 @@ fn check_bounds(missile: &Box<dyn missile::Missile>) -> bool {
     && missile.get_position()[1] < 1080.0
     && missile.get_position()[0] > 0.0
     && missile.get_position()[0] < 1920.0
+    && missile.get_collided() == false
 }
 
 pub struct MissileGenerator {
@@ -114,11 +113,11 @@ impl MissileGenerator {
         let player = graphics::Mesh::new_rectangle(
             ctx,
             graphics::DrawMode::fill(),
-            graphics::Rect::new_i32(
-                self.position[0] as i32,
-                self.position[1] as i32,
-                MISSILE_GENERATOR_HEIGHT as i32,
-                MISSILE_GENERATOR_WIDTH as i32 
+            graphics::Rect::new(
+                self.position[0],
+                self.position[1],
+                MISSILE_GENERATOR_HEIGHT,
+                MISSILE_GENERATOR_WIDTH 
             ),
             missile_generator_color
         )?;
