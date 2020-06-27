@@ -1,4 +1,5 @@
 extern crate rand;
+extern crate ncollide2d;
 
 use rand::Rng;
 use std::path;
@@ -73,7 +74,7 @@ impl State {
         let enemy_sprite = load_enemy_sprite(_ctx);
 
         let initial_position = Fec2::new(WINDOW_WIDTH/2.0, WINDOW_HEIGHT - 50.0);
-                
+
         let state = State {
             player: player::Player::new(initial_position, image_vec),
             enemy_group: enemy_group::EnemyGroup::new(enemy_sprite),
@@ -108,7 +109,7 @@ impl EventHandler for State {
     }
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult<()> {
-        graphics::clear(ctx, graphics::WHITE);
+        graphics::clear(ctx, graphics::BLACK);
 
         self.enemy_group.draw(ctx)?;
         self.player.draw(ctx)?;
