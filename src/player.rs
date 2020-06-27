@@ -127,26 +127,6 @@ impl Player {
                     .rotation(missile_draw_rotation)
                     .offset(Point2::new(0.5, 0.5));
 
-                let bounding_box = missile.get_bounding_volume();
-
-                let top_left_point = bounding_box.mins();
-                let bot_right_point = bounding_box.maxs();
-                
-                let outline_color = [1.0, 0.4, 0.8, 1.0].into();
-                let outline = graphics::Mesh::new_rectangle(
-                    ctx,
-                    graphics::DrawMode::fill(),
-                    graphics::Rect::new(
-                        top_left_point[0],
-                        top_left_point[1],
-                        bot_right_point[0] - top_left_point[0],
-                        bot_right_point[1] - top_left_point[1]
-                    ),
-                    outline_color
-                )?;
-        
-                graphics::draw(ctx, &outline, (ggez::mint::Point2 { x: 0.0, y: 0.0 },))?;
-
                 self.spritebatches[missile_spritebatch_index].add(p);
             }
         }
