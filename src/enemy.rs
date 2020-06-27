@@ -1,4 +1,6 @@
 use nalgebra::Vector2;
+use ncollide2d::math::Point;
+use ncollide2d::bounding_volume::aabb::AABB;
 
 type Fec2 = Vector2<f32>;
 
@@ -19,5 +21,12 @@ impl Enemy {
             position: starting_position,
             targeting_position: targeting_position,
         }
+    }
+
+    pub fn get_bounding_volume(&self) -> AABB<f32> {
+        let top_left_point = Point::new(self.position[0], self.position[1]);
+        let bot_right_point = Point::new(self.position[0] + ENEMY_WIDTH, self.position[1] + ENEMY_HEIGHT); // SHOULD BE TOP LEFT POINT + POINT::NEW(MISSILE WIDTH, HEIGHT)
+        
+        AABB::new(top_left_point, bot_right_point)
     }
 }

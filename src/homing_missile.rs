@@ -1,12 +1,18 @@
 use nalgebra::{Vector2, Vector3};
 use nalgebra::base::Unit;
+use ncollide2d::math::Point;
+use ncollide2d::bounding_volume::aabb::AABB;
+use ncollide2d::math::Isometry;
+use nalgebra::geometry::UnitComplex;
 use std::f64::consts::PI;
 
 use crate::missile;
+use crate::missile::Missile;
 use crate::enemy_group;
 use crate::enemy;
+use crate::ncollide2d::bounding_volume::BoundingVolume;
 
-const MAX_MISSILE_VELOCITY: f32 = 15.0;
+const MAX_MISSILE_VELOCITY: f32 = 20.0;
 
 type Fec2 = Vector2<f32>;
 type Fec3 = Vector3<f32>;
@@ -19,6 +25,7 @@ pub struct HomingMissile {
     velocity: f32,
     acceleration: f32,
     pub spritebatch_index: usize,
+    pub collided: bool,
 }
 
 fn vec_from_rotation(rotation: f32) -> Fec2 {
@@ -43,6 +50,7 @@ impl HomingMissile {
             velocity: velocity,
             acceleration: acceleration,
             spritebatch_index: spritebatch_index,
+            collided: false,
         }
     }
 
@@ -68,11 +76,15 @@ impl HomingMissile {
     }
 
     pub fn update_homing_missile(&mut self, enemies: &enemy_group::EnemyGroup) {
-        let target = self.get_closest_enemy(enemies);
+        let target = self.get_closest_enemy(enemies);        
 
         match target {
             Some(x) => {
-                self.set_new_position(&x);
+                if self.get_bounding_volume().intersects(&x.get_bounding_volume()) {
+                    self.collided = true;
+                } else {
+                    self.set_new_position(&x);
+                }                
             },
             None => {
                 self.set_new_position_empty();                  
@@ -115,5 +127,26 @@ impl missile::Missile for HomingMissile {
 
     fn get_draw_rotation(&self) -> f32 {
         self.draw_rotation
+    }
+
+    fn get_collided(&self) -> bool {
+        self.collided
+    }
+
+    fn get_bounding_volume(&self) -> AABB<f32> {
+        let top_left_point = Point::new(self.position[0], self.position[1]);
+
+        let bot_right_point = Point::new(self.position[0] + 3.0, self.position[1] + 30.0); // SHOULD BE TOP LEFT POINT + POINT::NEW(MISSILE WIDTH, HEIGHT)
+        
+        let mut aabb = AABB::new(top_left_point, bot_right_point);
+
+        let translation = Isometry::translation(-1.5, -15.0); // SHOULD BE .5*(MISSILE WIDTH, HEIGHT)
+        aabb = aabb.transform_by(&translation);
+
+        let rot = UnitComplex::new(self.draw_rotation);
+        let rotation = Isometry::rotation_wrt_point(rot, aabb.center());
+        aabb = aabb.transform_by(&rotation);
+
+        aabb
     }
 }

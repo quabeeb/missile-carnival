@@ -2,6 +2,7 @@ use std::collections::HashSet;
 use ggez::event::KeyCode;
 use ggez::{graphics, Context, GameResult, nalgebra::Point2};
 use nalgebra::Vector2;
+
 use std::f64::consts::PI;
 
 use crate::enemy_group;
@@ -9,8 +10,8 @@ use crate::missile_generator;
 
 type Fec2 = Vector2<f32>;
 
-const PLAYER_HEIGHT: f32 = 11.0;
-const PLAYER_WIDTH: f32 = 11.0;
+const PLAYER_HEIGHT: f32 = 10.0;
+const PLAYER_WIDTH: f32 = 10.0;
 
 pub struct Player {
     pub position: Fec2,
@@ -99,11 +100,11 @@ impl Player {
         let player = graphics::Mesh::new_rectangle(
             ctx,
             graphics::DrawMode::fill(),
-            graphics::Rect::new_i32(
-                self.position[0] as i32,
-                self.position[1] as i32,
-                PLAYER_HEIGHT as i32,
-                PLAYER_WIDTH as i32
+            graphics::Rect::new(
+                self.position[0],
+                self.position[1],
+                PLAYER_HEIGHT,
+                PLAYER_WIDTH
             ),
             player_color
         )?;
@@ -125,7 +126,7 @@ impl Player {
                     .dest(Point2::new(missile_position[0], missile_position[1]))
                     .rotation(missile_draw_rotation)
                     .offset(Point2::new(0.5, 0.5));
-                
+
                 self.spritebatches[missile_spritebatch_index].add(p);
             }
         }
