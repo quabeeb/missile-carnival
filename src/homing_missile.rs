@@ -54,13 +54,12 @@ impl HomingMissile {
         }
     }
 
-    fn get_closest_enemy<'a>(&self, enemy_group: &'a enemy_group::EnemyGroup) -> Option<(&'a enemy::Enemy, usize)> {
+    fn get_closest_enemy(&self, enemy_group: &enemy_group::EnemyGroup) -> Option<(enemy::Enemy, usize)> {
         let mut min_distance: f32 = -1.0;
-        let mut closest_enemy: Option<(&enemy::Enemy, usize)> = None;
+        let mut closest_enemy: Option<(enemy::Enemy, usize)> = None;
         let mut index: usize = 0;
 
         for enemy in &enemy_group.enemy_list {
-
             let distance_vec = self.position - enemy.targeting_position;
             let distance: f32 = distance_vec[0].powf(2.0) + distance_vec[1].powf(2.0);
 
@@ -70,7 +69,7 @@ impl HomingMissile {
             
             if distance <= min_distance {
                 min_distance = distance;
-                closest_enemy = Some((enemy, index));
+                closest_enemy = Some((*enemy, index));
             }
 
             index += 1;
