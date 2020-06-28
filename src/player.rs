@@ -43,7 +43,7 @@ impl Player {
         }
     }
 
-    pub fn update(&mut self, enemies: &enemy_group::EnemyGroup) {
+    pub fn update(&mut self, enemies: &mut enemy_group::EnemyGroup) {
         for m in self.missile_generator_list.iter_mut() {
             m.update(self.position, enemies);
         }

@@ -72,7 +72,7 @@ impl MissileGenerator {
         Ok(())
     }
 
-    pub fn update(&mut self, player_position: Fec2, enemies: &enemy_group::EnemyGroup) {
+    pub fn update(&mut self, player_position: Fec2, enemies: &mut enemy_group::EnemyGroup) {
         self.increment_orbit(player_position);
         self.update_missiles(enemies);
     }
@@ -97,7 +97,7 @@ impl MissileGenerator {
         }
     }
 
-    fn update_missiles(&mut self, enemies: &enemy_group::EnemyGroup) {
+    fn update_missiles(&mut self, enemies: &mut enemy_group::EnemyGroup) {
         for m in self.missile_list.iter_mut() {
             m.update(enemies);
         }

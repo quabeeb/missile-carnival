@@ -100,7 +100,8 @@ impl EventHandler for State {
             }
 
             self.player.handle_input(pressed_keys);    
-            self.player.update(&self.enemy_group);
+            self.player.update(&mut self.enemy_group);
+            self.enemy_group.update();
 
             println!("{:0}", ggez::timer::fps(ctx));
         }
@@ -111,6 +112,7 @@ impl EventHandler for State {
     fn draw(&mut self, ctx: &mut Context) -> GameResult<()> {
         graphics::clear(ctx, graphics::BLACK);
 
+        
         self.enemy_group.draw(ctx)?;
         self.player.draw(ctx)?;
 

@@ -49,7 +49,7 @@ impl StraightMissile {
 }
 
 impl missile::Missile for StraightMissile {
-    fn update(&mut self, enemies: &enemy_group::EnemyGroup) {
+    fn update(&mut self, enemies: &mut enemy_group::EnemyGroup) {
         self.set_new_position();
     }
 
