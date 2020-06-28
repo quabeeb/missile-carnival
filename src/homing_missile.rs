@@ -54,11 +54,13 @@ impl HomingMissile {
         }
     }
 
-    fn get_closest_enemy(&self, enemy_group: &enemy_group::EnemyGroup) -> Option<enemy::Enemy> {
+    fn get_closest_enemy<'a>(&self, enemy_group: &'a enemy_group::EnemyGroup) -> Option<(&'a enemy::Enemy, usize)> {
         let mut min_distance: f32 = -1.0;
-        let mut closest_enemy: Option<enemy::Enemy> = None;
+        let mut closest_enemy: Option<(&enemy::Enemy, usize)> = None;
+        let mut index: usize = 0;
 
         for enemy in &enemy_group.enemy_list {
+
             let distance_vec = self.position - enemy.targeting_position;
             let distance: f32 = distance_vec[0].powf(2.0) + distance_vec[1].powf(2.0);
 
@@ -68,23 +70,27 @@ impl HomingMissile {
             
             if distance <= min_distance {
                 min_distance = distance;
-                closest_enemy = Some(enemy::Enemy::new(Fec2::new(enemy.targeting_position[0], enemy.targeting_position[1])));
+                closest_enemy = Some((enemy, index));
             }
+
+            index += 1;
         }
 
         closest_enemy
     }
 
-    pub fn update_homing_missile(&mut self, enemies: &enemy_group::EnemyGroup) {
+    pub fn update_homing_missile(&mut self, enemies: &mut enemy_group::EnemyGroup) {
         let target = self.get_closest_enemy(enemies);        
 
         match target {
-            Some(x) => {
+            Some((x, index)) => {
                 if self.get_bounding_volume().intersects(&x.get_bounding_volume()) {
                     self.collided = true;
+                    let damage = 1;
+                    enemies.update_enemy(index, damage);
                 } else {
                     self.set_new_position(&x);
-                }                
+                }
             },
             None => {
                 self.set_new_position_empty();                  
@@ -98,10 +104,12 @@ impl HomingMissile {
     }
 
     pub fn set_new_position(&mut self, target: &enemy::Enemy) {
+        let enemy_targeting_position = target.targeting_position;
+
         self.position += self.rotation_vec * self.velocity;
         self.velocity = MAX_MISSILE_VELOCITY.min(self.velocity + self.acceleration);
 
-        let desired_direction = Unit::new_normalize(fec3ify(target.position - self.position));
+        let desired_direction = Unit::new_normalize(fec3ify(enemy_targeting_position - self.position));
         let current_direction = Unit::new_normalize(fec3ify(self.rotation_vec));
         let rotate_amount = desired_direction.cross(current_direction.as_ref())[2];
 
@@ -113,7 +121,7 @@ impl HomingMissile {
 }
 
 impl missile::Missile for HomingMissile {
-    fn update(&mut self, enemies: &enemy_group::EnemyGroup) {
+    fn update(&mut self, enemies: &mut enemy_group::EnemyGroup) {
         self.update_homing_missile(enemies);
     }
 

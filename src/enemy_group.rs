@@ -31,6 +31,25 @@ impl EnemyGroup {
         Ok(())
     }
 
+    pub fn update(&mut self) {
+        self.enemy_list.retain(|enemy| 
+            enemy.dead == false
+        );  
+    }
+
+    pub fn update_enemy(&mut self, index: usize, damage: i32) {
+        let enemy = self.enemy_list.get_mut(index);
+
+        match enemy {
+            Some(x) => {
+                x.decrement_health(damage);
+            },
+            None => {
+                println!("enemy not found?")
+            }
+        }        
+    }
+
     fn draw_enemy_group(&mut self, ctx: &mut Context) -> GameResult<()> {
         let param = graphics::DrawParam::new();
 
