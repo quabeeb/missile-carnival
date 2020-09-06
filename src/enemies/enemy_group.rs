@@ -1,5 +1,5 @@
-use crate::enemy;
-use crate::straight_missile;
+use crate::enemies::enemy;
+use crate::missiles::straight_missile;
 
 use ggez::{graphics, Context, GameResult, nalgebra::Point2};
 use nalgebra::Vector2;

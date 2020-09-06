@@ -29,7 +29,7 @@ impl Enemy {
 
     pub fn get_bounding_volume(&self) -> AABB<f32> {
         let top_left_point = Point::new(self.position[0], self.position[1]);
-        let bot_right_point = Point::new(self.position[0] + ENEMY_WIDTH, self.position[1] + ENEMY_HEIGHT); // SHOULD BE TOP LEFT POINT + POINT::NEW(MISSILE WIDTH, HEIGHT)
+        let bot_right_point = Point::new(self.position[0] + ENEMY_WIDTH, self.position[1] + ENEMY_HEIGHT);
         
         AABB::new(top_left_point, bot_right_point)
     }
