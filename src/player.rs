@@ -5,8 +5,8 @@ use nalgebra::Vector2;
 
 use std::f64::consts::PI;
 
-use crate::enemy_group;
-use crate::missile_generator;
+use crate::enemies::enemy_group;
+use crate::missiles::missile_generator;
 
 type Fec2 = Vector2<f32>;
 
@@ -95,7 +95,7 @@ impl Player {
     }
 
     fn draw_player(&mut self, ctx: &mut Context) -> GameResult<()> {
-        let player_color = [0.0, 0.0, 1.0, 1.0].into();
+        let player_color = [1.0, 0.4, 0.7, 1.0].into();
 
         let player = graphics::Mesh::new_rectangle(
             ctx,
