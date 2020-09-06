@@ -10,13 +10,9 @@ use ggez::timer;
 use nalgebra::Vector2;
 use ggez::filesystem;
 
-mod enemy;
-mod enemy_group;
-mod homing_missile;
-mod straight_missile;
+mod enemies;
+mod missiles;
 mod player;
-mod missile_generator;
-mod missile;
 
 type Fec2 = Vector2<f32>;
 
@@ -65,7 +61,7 @@ fn load_enemy_sprite(ctx: &mut Context) -> graphics::spritebatch::SpriteBatch {
 
 struct State {
     player: player::Player,
-    enemy_group: enemy_group::EnemyGroup,
+    enemy_group: enemies::enemy_group::EnemyGroup,
 }
 
 impl State {
@@ -77,7 +73,7 @@ impl State {
 
         let state = State {
             player: player::Player::new(initial_position, image_vec),
-            enemy_group: enemy_group::EnemyGroup::new(enemy_sprite),
+            enemy_group: enemies::enemy_group::EnemyGroup::new(enemy_sprite),
         };
 
         state
@@ -92,7 +88,7 @@ impl EventHandler for State {
             if pressed_keys.contains(&KeyCode::Q) {
                 let mut rng = rand::thread_rng();
 
-                let rng_enemy: enemy::Enemy = enemy::Enemy::new(
+                let rng_enemy: enemies::enemy::Enemy = enemies::enemy::Enemy::new(
                     Fec2::new(rng.gen_range(0.0, 1920.0), rng.gen_range(0.0, 1080.0))
                 );
                 
