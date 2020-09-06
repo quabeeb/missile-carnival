@@ -4,10 +4,10 @@ use nalgebra::Vector2;
 use ggez::{graphics, Context, GameResult};
 use std::f64::consts::PI;
 
-use crate::missile;
-use crate::homing_missile;
-use crate::straight_missile;
-use crate::enemy_group;
+use crate::missiles::missile;
+use crate::missiles::homing_missile;
+use crate::missiles::straight_missile;
+use crate::enemies::enemy_group;
 
 type Fec2 = Vector2<f32>;
 
@@ -51,7 +51,7 @@ impl MissileGenerator {
     }
 
     pub fn add_missile(&mut self) {
-        if self.missile_toggle % 2 == 0 {
+        if self.missile_toggle % 5 == 0 {
             let temp_rotation = (3.0*PI/2.0) as f32;
 
             let missile_generator_offset_position = Fec2::new(self.position[0] + MISSILE_GENERATOR_WIDTH/2.0, self.position[1] + MISSILE_GENERATOR_HEIGHT/2.0 - 10.0);
@@ -108,7 +108,7 @@ impl MissileGenerator {
     }
 
     fn draw_missile_generator(&mut self, ctx: &mut Context) -> GameResult<()> {
-        let missile_generator_color = [0.0, 0.0, 1.0, 0.3].into();
+        let missile_generator_color = [1.0, 0.4, 0.7, 0.4].into();
 
         let player = graphics::Mesh::new_rectangle(
             ctx,

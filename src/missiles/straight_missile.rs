@@ -5,8 +5,8 @@ use ncollide2d::math::Isometry;
 use nalgebra::geometry::UnitComplex;
 use std::f64::consts::PI;
 
-use crate::missile;
-use crate::enemy_group;
+use crate::missiles::missile::Missile;
+use crate::enemies::enemy_group;
 
 type Fec2 = Vector2<f32>;
 const MAX_MISSILE_VELOCITY: f32 = 10.0;
@@ -48,7 +48,7 @@ impl StraightMissile {
     }
 }
 
-impl missile::Missile for StraightMissile {
+impl Missile for StraightMissile {
     fn update(&mut self, enemies: &mut enemy_group::EnemyGroup) {
         self.set_new_position();
     }

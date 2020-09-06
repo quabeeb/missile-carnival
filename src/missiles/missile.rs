@@ -3,7 +3,7 @@ use ncollide2d::bounding_volume::AABB;
 
 type Fec2 = Vector2<f32>;
 
-use crate::enemy_group;
+use crate::enemies::enemy_group;
 
 pub trait Missile {
     fn update(&mut self, enemies: &mut enemy_group::EnemyGroup);

@@ -6,10 +6,9 @@ use ncollide2d::math::Isometry;
 use nalgebra::geometry::UnitComplex;
 use std::f64::consts::PI;
 
-use crate::missile;
-use crate::missile::Missile;
-use crate::enemy_group;
-use crate::enemy;
+use crate::missiles::missile::Missile;
+use crate::enemies::enemy_group;
+use crate::enemies::enemy;
 use crate::ncollide2d::bounding_volume::BoundingVolume;
 
 const MAX_MISSILE_VELOCITY: f32 = 20.0;
@@ -119,7 +118,7 @@ impl HomingMissile {
     }
 }
 
-impl missile::Missile for HomingMissile {
+impl Missile for HomingMissile {
     fn update(&mut self, enemies: &mut enemy_group::EnemyGroup) {
         self.update_homing_missile(enemies);
     }
