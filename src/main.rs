@@ -88,11 +88,11 @@ impl EventHandler for State {
             if pressed_keys.contains(&KeyCode::Q) {
                 let mut rng = rand::thread_rng();
 
-                let rng_enemy: enemies::enemy::Enemy = enemies::enemy::Enemy::new(
+                let rng_enemy = enemies::unmoving_enemy::UnmovingEnemy::new(
                     Fec2::new(rng.gen_range(0.0, 1920.0), rng.gen_range(0.0, 1080.0))
                 );
                 
-                self.enemy_group.add_enemy(rng_enemy);
+                self.enemy_group.add_enemy(Box::new(rng_enemy));
             }
 
             self.player.handle_input(pressed_keys);    
